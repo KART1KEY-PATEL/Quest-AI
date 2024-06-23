@@ -8,7 +8,7 @@ import 'package:questias/pages/model/openAIChatModel.dart';
 import 'package:questias/utils/color.dart';
 import 'package:questias/utils/customAppBar.dart';
 import 'package:questias/services/BackendService.dart';
-import 'package:flutter_tts/flutter_tts.dart'; // Add this import
+// import 'package:flutter_tts/flutter_tts.dart'; // Add this import
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -20,41 +20,41 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   TextEditingController _senderMessageController = TextEditingController();
   BackendService _backendService = BackendService();
-  FlutterTts _flutterTts = FlutterTts();
+  // FlutterTts _flutterTts = FlutterTts();
 
-  @override
-  void initState() {
-    super.initState();
-    _initTts();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _initTts();
+  // }
 
-  void _initTts() {
-    _flutterTts = FlutterTts();
+  // void _initTts() {
+  //   _flutterTts = FlutterTts();
 
-    _flutterTts.setStartHandler(() {
-      setState(() {
-        print("Playing");
-      });
-    });
+  //   _flutterTts.setStartHandler(() {
+  //     setState(() {
+  //       print("Playing");
+  //     });
+  //   });
 
-    _flutterTts.setCompletionHandler(() {
-      setState(() {
-        print("Complete");
-      });
-    });
+  //   _flutterTts.setCompletionHandler(() {
+  //     setState(() {
+  //       print("Complete");
+  //     });
+  //   });
 
-    _flutterTts.setErrorHandler((msg) {
-      setState(() {
-        print("error: $msg");
-      });
-    });
-  }
+  //   _flutterTts.setErrorHandler((msg) {
+  //     setState(() {
+  //       print("error: $msg");
+  //     });
+  //   });
+  // }
 
-  Future<void> _speak(String text) async {
-    await _flutterTts.setLanguage("en-US");
-    await _flutterTts.setPitch(1.0);
-    await _flutterTts.speak(text);
-  }
+  // Future<void> _speak(String text) async {
+  //   await _flutterTts.setLanguage("en-US");
+  //   await _flutterTts.setPitch(1.0);
+  //   await _flutterTts.speak(text);
+  // }
 
   void _sendMessage(String message) async {
     if (message.isEmpty) return;
@@ -72,7 +72,7 @@ class _ChatPageState extends State<ChatPage> {
         .addMessage(OpenAIChatModel(content: response, role: "assistant"));
 
     // Speak the response
-    _speak(response);
+    // _speak(response);
   }
 
   @override

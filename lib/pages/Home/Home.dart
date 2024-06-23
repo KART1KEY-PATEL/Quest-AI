@@ -6,6 +6,8 @@ import 'package:questias/pages/Home/controller/ChatController.dart';
 import 'package:questias/pages/Home/widgets/SenderMessageTextField.dart';
 import 'package:questias/pages/OnBoarding/controller/OnBoardingController.dart';
 import 'package:questias/pages/model/chatMessage.dart';
+import 'package:questias/pages/model/openAIChatModel.dart';
+import 'package:questias/services/BackendService.dart';
 import 'package:questias/utils/color.dart';
 import 'package:questias/utils/customAppBar.dart';
 import 'package:questias/utils/textUtil.dart';
@@ -17,22 +19,14 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-List<ChatMessage> messages = [
-  ChatMessage(
-    text: "Hello, How can I help you?",
-    isSender: false,
+List<OpenAIChatModel> messages = [
+  OpenAIChatModel(
+    content: "Hello",
+    role: "user",
   ),
-  ChatMessage(
-    text: "I want to know about Flutter",
-    isSender: true,
-  ),
-  ChatMessage(
-    text: "Flutter is a UI toolkit developed by Google",
-    isSender: false,
-  ),
-  ChatMessage(
-    text: "Thank you",
-    isSender: true,
+  OpenAIChatModel(
+    content: "How can i help you?",
+    role: "user",
   ),
 ];
 List<String> exampleMessage = [
@@ -43,6 +37,7 @@ List<String> exampleMessage = [
 
 class _HomePageState extends State<HomePage> {
   TextEditingController _senderMessageController = TextEditingController();
+  BackendService _backendService = BackendService();
   @override
   Widget build(BuildContext context) {
     double sW = MediaQuery.of(context).size.width;
@@ -109,15 +104,17 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            SliverToBoxAdapter(
-              child: SenderMessageTextField(sW: sW, senderMessageController: _senderMessageController, sH: sH),
-            )
           ],
         ),
       ),
+      persistentFooterButtons: [
+        SenderMessageTextField(
+            sW: sW, senderMessageController: _senderMessageController, sH: sH),
+      ],
     );
   }
 }
+
 class ExampleText extends StatelessWidget {
   const ExampleText({
     super.key,

@@ -1,8 +1,11 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:questias/pages/Base/Base.dart';
+import 'package:questias/pages/Home/Home.dart';
 import 'package:questias/pages/Home/controller/ChatController.dart';
+import 'package:questias/pages/Home/subPages/AllChatPage.dart';
 import 'package:questias/pages/Home/subPages/ChatPage.dart';
 import 'package:questias/pages/OnBoarding/OnBoarding.dart';
 import 'package:questias/pages/OnBoarding/controller/OnBoardingController.dart';
@@ -13,6 +16,10 @@ import 'package:questias/pages/Welcome/Welcome.dart';
 import 'package:questias/utils/color.dart';
 
 void main() async {
+  print("loading env");
+  await dotenv.load(fileName: ".env");
+  print("done env");
+
   WidgetsFlutterBinding.ensureInitialized();
 
   String initialRoute = await determineInitialRoute();
@@ -101,7 +108,7 @@ class MyApp extends StatelessWidget {
         }
         switch (settings.name) {
           case '/':
-            return MaterialPageRoute(builder: (_) => Base());
+            return MaterialPageRoute(builder: (_) => OnBoardingPage());
           case '/login':
             return MaterialPageRoute(builder: (_) => LoginPage());
           case '/signUp':
@@ -114,6 +121,10 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => Base());
           case '/chat':
             return MaterialPageRoute(builder: (_) => ChatPage());
+          case '/allChat':
+            return MaterialPageRoute(builder: (_) => AllChatPage());
+          case '/home':
+            return MaterialPageRoute(builder: (_) => HomePage());
           default:
             return null;
         }

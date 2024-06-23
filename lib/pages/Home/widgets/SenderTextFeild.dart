@@ -4,20 +4,28 @@ import 'package:questias/pages/Home/controller/ChatController.dart';
 import 'package:questias/pages/model/openAIChatModel.dart';
 import 'package:questias/services/BackendService.dart';
 import 'package:questias/utils/color.dart';
-import 'package:questias/pages/model/chatMessage.dart';
 
-class SenderMessageTextField extends StatelessWidget {
-  SenderMessageTextField({
+class SenderTextField extends StatelessWidget {
+  SenderTextField({
     super.key,
     required this.sW,
     required TextEditingController senderMessageController,
     required this.sH,
+    required this.speechToText,
+    required this.speechEnabled,
+    required this.startListening,
+    required this.stopListening,
   }) : _senderMessageController = senderMessageController;
 
   final double sW;
   final TextEditingController _senderMessageController;
   final double sH;
+  final dynamic speechToText; // Changed to dynamic
+  final bool speechEnabled;
+  final Function startListening;
+  final Function stopListening;
   BackendService _backendService = BackendService();
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -41,9 +49,15 @@ class SenderMessageTextField extends StatelessWidget {
                       color: AppColors.primaryButtonColor,
                     ),
                     SizedBox(width: 15), // space between icons
-                    Icon(
-                      Icons.mic,
-                      color: AppColors.primaryButtonColor,
+                    GestureDetector(
+                      onTap: () {
+                        print("Mic button pressed");
+                        startListening();
+                      },
+                      child: Icon(
+                        Icons.mic,
+                        color: AppColors.primaryButtonColor,
+                      ),
                     ),
                     SizedBox(width: 15), // space between icons
                   ],
@@ -66,7 +80,8 @@ class SenderMessageTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(sH * 0.1),
           child:
               Consumer<ChatController>(builder: (context, controller, child) {
-            return InkWell(
+            return 
+            InkWell(
               onTap: () async {
                 controller.addMessage(
                   OpenAIChatModel(
@@ -74,8 +89,6 @@ class SenderMessageTextField extends StatelessWidget {
                     role: "user",
                   ),
                 );
-                Navigator.of(context).pop();
-                Navigator.pushNamed(context, '/chat');
                 controller.setLoading();
                 String response = await _backendService.getOpenAIResponse(
                   messages: controller.messages,

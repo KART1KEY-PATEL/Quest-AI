@@ -1,11 +1,12 @@
 import 'package:questias/pages/model/chatMessage.dart';
+import 'package:questias/pages/model/openAIChatModel.dart';
 
 class ChatTile {
   String id;
-  List<ChatMessage> messages;
+  List<OpenAIChatModel> messages;
   String title = "GovBuddy";
   String lastMessage;
-  String time = DateTime.now().toString();
+  DateTime time = DateTime.now();
   ChatTile({
     required this.id,
     required this.messages,

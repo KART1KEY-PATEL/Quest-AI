@@ -9,6 +9,7 @@ class SenderTextField extends StatelessWidget {
   SenderTextField({
     super.key,
     required this.sW,
+    required this.homePage,
     required TextEditingController senderMessageController,
     required this.sH,
     required this.speechToText,
@@ -23,6 +24,7 @@ class SenderTextField extends StatelessWidget {
   final dynamic speechToText; // Changed to dynamic
   final bool speechEnabled;
   final Function startListening;
+  final bool homePage;
   final Function stopListening;
   BackendService _backendService = BackendService();
 
@@ -51,6 +53,7 @@ class SenderTextField extends StatelessWidget {
                     SizedBox(width: 15), // space between icons
                     GestureDetector(
                       onTap: () {
+                        homePage ? Navigator.pushNamed(context, '/chat') : null;
                         print("Mic button pressed");
                         startListening();
                       },
@@ -80,9 +83,9 @@ class SenderTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(sH * 0.1),
           child:
               Consumer<ChatController>(builder: (context, controller, child) {
-            return 
-            InkWell(
+            return InkWell(
               onTap: () async {
+                homePage ? Navigator.pushNamed(context, '/chat') : null;
                 controller.addMessage(
                   OpenAIChatModel(
                     content: _senderMessageController.text,

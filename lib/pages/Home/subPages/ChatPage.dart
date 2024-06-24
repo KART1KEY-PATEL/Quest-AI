@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:questias/pages/Home/controller/ChatController.dart';
 import 'package:questias/pages/Home/subPages/SpeechRecognitionPage.dart';
@@ -8,7 +12,12 @@ import 'package:questias/pages/model/openAIChatModel.dart';
 import 'package:questias/utils/color.dart';
 import 'package:questias/utils/customAppBar.dart';
 import 'package:questias/services/BackendService.dart';
+import 'package:http/http.dart' as http;
+
 // import 'package:flutter_tts/flutter_tts.dart'; // Add this import
+// sk_42366f6528755a6e18e1be7917b6601f657d3671b9f43a58
+
+String EL_API_KEY = dotenv.env['EL_API_KEY'] as String;
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -20,41 +29,55 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   TextEditingController _senderMessageController = TextEditingController();
   BackendService _backendService = BackendService();
-  // FlutterTts _flutterTts = FlutterTts();
+  final player = AudioPlayer();
+  bool _isLoadingVoice = false;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _initTts();
-  // }
+  @override
+  void initState() {
+    super.initState();
+  }
 
-  // void _initTts() {
-  //   _flutterTts = FlutterTts();
+  @override
+  void dispose() {
+    _senderMessageController.dispose();
+    player.dispose();
+    super.dispose();
+  }
 
-  //   _flutterTts.setStartHandler(() {
-  //     setState(() {
-  //       print("Playing");
-  //     });
-  //   });
+  Future<void> playTextToSpeech(String text) async {
+    setState(() {
+      _isLoadingVoice = true;
+    });
 
-  //   _flutterTts.setCompletionHandler(() {
-  //     setState(() {
-  //       print("Complete");
-  //     });
-  //   });
+    String voiceRachel = '21m00Tcm4TlvDq8ikWAM';
 
-  //   _flutterTts.setErrorHandler((msg) {
-  //     setState(() {
-  //       print("error: $msg");
-  //     });
-  //   });
-  // }
+    String url = 'https://api.elevenlabs.io/v1/text-to-speech/$voiceRachel';
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'accept': 'audio/mpeg',
+        'xi-api-key': EL_API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        "text": text,
+        "model_id": "eleven_monolingual_v1",
+        "voice_settings": {"stability": .15, "similarity_boost": .75}
+      }),
+    );
 
-  // Future<void> _speak(String text) async {
-  //   await _flutterTts.setLanguage("en-US");
-  //   await _flutterTts.setPitch(1.0);
-  //   await _flutterTts.speak(text);
-  // }
+    setState(() {
+      _isLoadingVoice = false;
+    });
+
+    if (response.statusCode == 200) {
+      final bytes = response.bodyBytes;
+      await player.setAudioSource(MyCustomSource(bytes));
+      player.play();
+    } else {
+      return;
+    }
+  }
 
   void _sendMessage(String message) async {
     if (message.isEmpty) return;
@@ -71,8 +94,7 @@ class _ChatPageState extends State<ChatPage> {
     chatController
         .addMessage(OpenAIChatModel(content: response, role: "assistant"));
 
-    // Speak the response
-    // _speak(response);
+    playTextToSpeech(response);
   }
 
   @override
@@ -217,6 +239,7 @@ class _ChatPageState extends State<ChatPage> {
       persistentFooterAlignment: AlignmentDirectional.center,
       persistentFooterButtons: [
         SenderTextField(
+          homePage: false,
           sW: sW,
           sH: sH,
           senderMessageController: _senderMessageController,
@@ -236,6 +259,25 @@ class _ChatPageState extends State<ChatPage> {
           stopListening: () {},
         )
       ],
+    );
+  }
+}
+
+// Feed your own stream of bytes into the player
+class MyCustomSource extends StreamAudioSource {
+  final List<int> bytes;
+  MyCustomSource(this.bytes);
+
+  @override
+  Future<StreamAudioResponse> request([int? start, int? end]) async {
+    start ??= 0;
+    end ??= bytes.length;
+    return StreamAudioResponse(
+      sourceLength: bytes.length,
+      contentLength: end - start,
+      offset: start,
+      stream: Stream.value(bytes.sublist(start, end)),
+      contentType: 'audio/mpeg',
     );
   }
 }

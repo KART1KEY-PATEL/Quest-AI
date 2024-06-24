@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
@@ -14,9 +15,6 @@ import 'package:questias/utils/customAppBar.dart';
 import 'package:questias/services/BackendService.dart';
 import 'package:http/http.dart' as http;
 
-// import 'package:flutter_tts/flutter_tts.dart'; // Add this import
-// sk_42366f6528755a6e18e1be7917b6601f657d3671b9f43a58
-
 String EL_API_KEY = dotenv.env['EL_API_KEY'] as String;
 
 class ChatPage extends StatefulWidget {
@@ -27,6 +25,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  static const platform = MethodChannel('com.example.questias/tts');
   TextEditingController _senderMessageController = TextEditingController();
   BackendService _backendService = BackendService();
   final player = AudioPlayer();
@@ -44,39 +43,26 @@ class _ChatPageState extends State<ChatPage> {
     super.dispose();
   }
 
+  Future<void> _speak(String text) async {
+    try {
+      final String result =
+          await platform.invokeMethod('speak', {"text": text});
+      print(result);
+    } on PlatformException catch (e) {
+      print("Failed to invoke: '${e.message}'.");
+    }
+  }
+
   Future<void> playTextToSpeech(String text) async {
     setState(() {
       _isLoadingVoice = true;
     });
 
-    String voiceRachel = '21m00Tcm4TlvDq8ikWAM';
-
-    String url = 'https://api.elevenlabs.io/v1/text-to-speech/$voiceRachel';
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {
-        'accept': 'audio/mpeg',
-        'xi-api-key': EL_API_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: json.encode({
-        "text": text,
-        "model_id": "eleven_monolingual_v1",
-        "voice_settings": {"stability": .15, "similarity_boost": .75}
-      }),
-    );
+    await _speak(text);
 
     setState(() {
       _isLoadingVoice = false;
     });
-
-    if (response.statusCode == 200) {
-      final bytes = response.bodyBytes;
-      await player.setAudioSource(MyCustomSource(bytes));
-      player.play();
-    } else {
-      return;
-    }
   }
 
   void _sendMessage(String message) async {
@@ -252,9 +238,9 @@ class _ChatPageState extends State<ChatPage> {
                 builder: (context) => SpeechRecognitionPage(),
               ),
             );
-            if (result != null && result is String) {
-              _sendMessage(result);
-            }
+            // if (result != null && result is String) {
+            //   _sendMessage(result);
+            // }
           },
           stopListening: () {},
         )

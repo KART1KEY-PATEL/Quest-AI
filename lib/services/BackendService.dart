@@ -1,17 +1,21 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:questias/pages/model/openAIChatModel.dart';
 
 class BackendService {
   Future<String> getOpenAIResponse(
       {required List<OpenAIChatModel> messages}) async {
-    final String backendUrl = "https://quest-ias-backend.onrender.com";
+    final String backendUrl =
+        "https://questias-backend-production.up.railway.app";
+
+    // Trim messages to the last 32 elements
+    final trimmedMessages = messages.length > 32
+        ? messages.sublist(messages.length - 32)
+        : messages;
 
     // Convert messages to JSON map
     final List<Map<String, String>> messageMaps =
-        messages.map((message) => message.toJson()).toList();
+        trimmedMessages.map((message) => message.toJson()).toList();
 
     try {
       final response = await http.post(

@@ -19,7 +19,7 @@ class MainActivity: FlutterActivity() {
             }
         }
 
-        MethodChannel(flutterEngine?.dartExecutor?.binaryMessenger!!, CHANNEL).setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             if (call.method == "speak") {
                 val text = call.argument<String>("text")
                 if (text != null) {

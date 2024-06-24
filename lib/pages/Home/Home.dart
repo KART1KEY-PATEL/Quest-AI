@@ -1,7 +1,5 @@
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
@@ -19,70 +17,46 @@ import 'package:questias/utils/customAppBar.dart';
 import 'package:questias/utils/textUtil.dart';
 import 'package:http/http.dart' as http;
 
-String EL_API_KEY = dotenv.env['EL_API_KEY'] as String;
-
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
   @override
-  State<HomePage> createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-List<OpenAIChatModel> messages = [
-  OpenAIChatModel(
-    content: "Hello",
-    role: "user",
-  ),
-  OpenAIChatModel(
-    content: "How can i help you?",
-    role: "user",
-  ),
-];
-List<String> exampleMessage = [
-  "I am a ChatBOT to help UPSC aspirants.",
-  "You can ask me any question related to History, Geography, Polity and much more.",
-  "You can also use the mic button to ask me a question. If you don't want to typ.e",
-];
-
 class _HomePageState extends State<HomePage> {
+  List<String> exampleMessage = [
+    "I am a ChatBOT to help UPSC aspirants.",
+    "You can ask me any question related to History, Geography, Polity and much more.",
+    "You can also use the mic button to ask me a question. If you don't want to typ.e",
+  ];
+  static const platform = MethodChannel('com.example.questias/tts');
   TextEditingController _senderMessageController = TextEditingController();
   BackendService _backendService = BackendService();
   bool _isLoadingVoice = false;
   final player = AudioPlayer();
+  String _text = "Hello, how are you?";
+
+  Future<void> _speak(String text) async {
+    print("speak");
+    try {
+      final String result =
+          await platform.invokeMethod('speak', {"text": text});
+      print(result);
+    } on PlatformException catch (e) {
+      print("Failed to invoke: '${e.message}'.");
+    }
+  }
 
   Future<void> playTextToSpeech(String text) async {
+    print("speak1");
     setState(() {
       _isLoadingVoice = true;
     });
 
-    String voiceRachel = '21m00Tcm4TlvDq8ikWAM';
-
-    String url = 'https://api.elevenlabs.io/v1/text-to-speech/$voiceRachel';
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {
-        'accept': 'audio/mpeg',
-        'xi-api-key': EL_API_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: json.encode({
-        "text": text,
-        "model_id": "eleven_monolingual_v1",
-        "voice_settings": {"stability": .15, "similarity_boost": .75}
-      }),
-    );
+    await _speak(text);
 
     setState(() {
       _isLoadingVoice = false;
     });
-
-    if (response.statusCode == 200) {
-      final bytes = response.bodyBytes;
-      await player.setAudioSource(MyCustomSource(bytes));
-      player.play();
-    } else {
-      return;
-    }
   }
 
   void _sendMessage(String message) async {
@@ -95,7 +69,7 @@ class _HomePageState extends State<HomePage> {
     String response = await _backendService.getOpenAIResponse(
       messages: chatController.messages,
     );
-
+    print(response);
     chatController.setLoading();
     chatController
         .addMessage(OpenAIChatModel(content: response, role: "assistant"));
@@ -187,9 +161,6 @@ class _HomePageState extends State<HomePage> {
                 builder: (context) => SpeechRecognitionPage(),
               ),
             );
-            if (result != null && result is String) {
-              _sendMessage(result);
-            }
           },
           stopListening: () {},
         ),
@@ -209,6 +180,7 @@ class ExampleText extends StatelessWidget {
   final double sW;
   final double sH;
   final String title;
+
   @override
   Widget build(BuildContext context) {
     return Container(

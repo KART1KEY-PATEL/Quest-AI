@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "854740253745",
+    "project_id": "quest-ias",
+    "storage_bucket": "quest-ias.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:854740253745:android:a8dc1b93ef291ff6b8a910",
+        "android_client_info": {
+          "package_name": "com.kartikey.quest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgbkhG5KBlvg8MY8bYvasFqDOPLx9arCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

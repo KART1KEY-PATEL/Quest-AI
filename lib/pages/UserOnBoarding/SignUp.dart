@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:questias/services/BackendService.dart';
 import 'package:questias/utils/customAppBar.dart';
+import 'package:questias/utils/customTextField.dart';
 import 'package:questias/utils/textUtil.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -10,6 +13,27 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  bool checked = false;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+  BackendService backendService = BackendService();
+
+  void onSubmit() async {
+    await backendService.signUpWithEmailAndPassword(
+      emailController.text,
+      passwordController.text,
+    );
+    var userId = FirebaseAuth.instance.currentUser!.uid;
+    await backendService.addUserToFirestore(
+      userId: userId,
+      email: emailController.text,
+      name: nameController.text,
+      password: passwordController.text,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,50 +68,38 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(
                 height: 60,
               ),
-              const TextField(
-                cursorColor: Colors.black,
-                decoration: InputDecoration(
-                  suffixIcon: Icon(
-                    Icons.email_outlined,
-                    color: Colors.grey,
-                  ),
-                  labelText: 'Your Email',
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Color(
-                            0xFF17C3CE)), // Change the underline color when not focused
-                  ),
-                  labelStyle: TextStyle(color: Colors.black),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.blue), // Change the border color on focus
-                  ),
-                ),
+              CustomTextField(
+                hintText: "Enter your Name",
+                controller: nameController,
+                validate: true,
+                maxLines: 1,
               ),
-              const SizedBox(
-                height: 30,
+              SizedBox(
+                height: 20,
               ),
-              const TextField(
-                obscureText: true,
-                cursorColor: Colors.black,
-                style: TextStyle(color: Colors.black),
-                decoration: InputDecoration(
-                  suffixIcon: Icon(
-                    Icons.remove_red_eye_outlined,
-                    color: Colors.grey,
-                  ),
-                  labelText: 'Create your Password',
-                  labelStyle: TextStyle(color: Colors.black),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Color(
-                            0xFF17C3CE)), // Change the underline color when not focused
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.blue), // Change the border color on focus
-                  ),
-                ),
+              CustomTextField(
+                hintText: "Enter your Email",
+                controller: emailController,
+                validate: true,
+                maxLines: 1,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              CustomTextField(
+                hintText: "Create your Password",
+                controller: passwordController,
+                validate: true,
+                maxLines: 1,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              CustomTextField(
+                hintText: "Confirm your Password",
+                controller: confirmPasswordController,
+                validate: true,
+                maxLines: 1,
               ),
               const SizedBox(
                 height: 30,
@@ -96,10 +108,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Checkbox(
-                    value: true,
+                    value: checked,
                     checkColor: Colors.white,
                     activeColor: const Color(0xFF17C3CE),
-                    onChanged: (bool? newValue) {},
+                    onChanged: (bool? newValue) {
+                      setState(() {
+                        checked = newValue!;
+                      });
+                    },
                   ),
                   txt("I agree to ChatBot_AI"),
                   txt(
@@ -113,18 +129,12 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               InkWell(
                 onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/completeProfile');
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //       builder: (context) => const CompleteProfilePage()),
-                  // );
+                  onSubmit();
                 },
                 child: Container(
                   decoration: BoxDecoration(
                     color: const Color(0xFF17C3CE),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(10),
                     boxShadow: const [
                       BoxShadow(
                         color: Color(0xFF17C3CE), // Shadow color
@@ -148,22 +158,9 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(
                 height: 25,
               ),
-              // Center(
-              //   child: txt(
-              //     "Forgot Password?",
-              //     color: Color(0xFF17C3CE),
-              //   ),
-              // ),
-              // const SizedBox(
-              //   height: 20,
-              // ),
               GestureDetector(
                 onTap: () {
-                  Navigator.pop(context);
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => const SignInPage()),
-                  // );
+                  Navigator.pushNamed(context, "/login");
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -177,7 +174,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               const SizedBox(
-                height: 60,
+                height: 20,
               ),
               Row(
                 children: [

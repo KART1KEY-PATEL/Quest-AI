@@ -41,7 +41,7 @@ class WelcomePage extends StatelessWidget {
                   width: sW * 0.4,
                 ),
                 txt(
-                  "Quest IAS AI",
+                  "Quest AI",
                   size: sW * 0.1,
                   color: AppColors.accentTextColor,
                   weight: FontWeight.w600,

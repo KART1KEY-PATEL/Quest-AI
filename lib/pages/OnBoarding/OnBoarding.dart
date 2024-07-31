@@ -15,7 +15,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   final PageController _pageController = PageController(initialPage: 0);
   final List<Widget> _pages = [
     const Onboarding(
-      title: "Introduction to Quest IAS AI",
+      title: "Introduction to Quest AI",
       description:
           "Meet Chatbot, your personal AI language model & discover the benefits of using Chatbot_AI for language tasks",
       imageAsset: "assets/images/onboarding_1.png",
@@ -27,7 +27,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       imageAsset: "assets/images/onboarding_2.png",
     ),
     const Onboarding(
-      title: "Getting started with Quest IAS AI",
+      title: "Getting started with Quest AI",
       description: "Try out different language tasks and modes. ",
       imageAsset: "assets/images/onboarding_3.png",
     ),

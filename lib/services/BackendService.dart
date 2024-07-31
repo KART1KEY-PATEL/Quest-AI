@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:questias/pages/model/openAIChatModel.dart';
@@ -39,6 +41,67 @@ class BackendService {
     } catch (e) {
       print('Exception: $e');
       throw Exception('Failed to load response');
+    }
+  }
+
+  Future<void> signUpWithEmailAndPassword(String email, String password) async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // User created, store additional data to Firestore (if needed)
+    } catch (e) {
+      print("Error signing up: $e");
+      // Handle error
+    }
+  }
+
+  // Sign In with Email/Password
+  Future<bool> signInWithEmailAndPassword(String email, String password) async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return (userCredential.user != null);
+    } catch (e) {
+      print("Error signing in: $e");
+      return false;
+    }
+  }
+
+  // Sign Out
+  void signOutUser() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      // Navigate to login screen or perform other actions after logout
+    } catch (e) {
+      print("Error signing out: $e");
+      // Handle error
+    }
+  }
+
+  Future<void> addUserToFirestore({
+    required String userId,
+    required String email,
+    required String name,
+    required String password,
+  }) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+        'email': email,
+        'name': name,
+        'password': password,
+
+        // Add more fields as needed
+      });
+    } catch (e) {
+      print("Error adding user to Firestore: $e");
+      // Handle error
     }
   }
 }

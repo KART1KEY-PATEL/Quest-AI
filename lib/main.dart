@@ -1,8 +1,11 @@
 import 'package:device_preview/device_preview.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:questias/pages/AuthGate/auth_gate.dart';
 import 'package:questias/pages/Base/Base.dart';
+import 'package:questias/pages/Books/sub_pages/add_book.dart';
 import 'package:questias/pages/Home/Home.dart';
 import 'package:questias/pages/Home/controller/ChatController.dart';
 import 'package:questias/pages/Home/subPages/AllChatPage.dart';
@@ -14,6 +17,8 @@ import 'package:questias/pages/UserOnBoarding/Login.dart';
 import 'package:questias/pages/UserOnBoarding/SignUp.dart';
 import 'package:questias/pages/Welcome/Welcome.dart';
 import 'package:questias/utils/color.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   print("loading env");
@@ -22,7 +27,9 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  String initialRoute = await determineInitialRoute();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(MultiProvider(
     providers: [
@@ -32,20 +39,19 @@ void main() async {
     ],
     child: DevicePreview(
       enabled: false,
-      builder: (context) => MyApp(initialRoute: initialRoute),
+      builder: (context) => const MyApp(),
     ),
   ));
 }
 
-Future<String> determineInitialRoute() async {
-  return '/';
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
 }
 
-class MyApp extends StatelessWidget {
-  final String initialRoute;
-
-  const MyApp({super.key, required this.initialRoute});
-
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -55,6 +61,9 @@ class MyApp extends StatelessWidget {
         colorScheme:
             ColorScheme.fromSeed(seedColor: Colors.deepPurple).copyWith(
           primary: const Color(0xFF4362FF),
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: AppColors.primaryButtonColor,
         ),
         buttonTheme: const ButtonThemeData(
           buttonColor: Color(0xFF4362FF),
@@ -98,33 +107,53 @@ class MyApp extends StatelessWidget {
         fontFamily: 'PlusJakartaSans',
         useMaterial3: true,
       ),
-      initialRoute: initialRoute,
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            print("Error: ${snapshot.error}");
+            return const Center(
+              child: Text("Something went wrong"),
+            );
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (snapshot.hasData) {
+            print("User is logged in");
+
+            return Base();
+          }
+
+          print("User is not logged in");
+          return OnBoardingPage();
+        },
+      ),
       onGenerateRoute: (settings) {
-        if (settings.name == '/otp') {
-          final phoneNumber = settings.arguments as String;
-          // return MaterialPageRoute(
-          //   builder: (context) => OTPPage(phoneNumber: phoneNumber),
-          // );
-        }
         switch (settings.name) {
-          case '/':
-            return MaterialPageRoute(builder: (_) => OnBoardingPage());
           case '/login':
-            return MaterialPageRoute(builder: (_) => LoginPage());
+            return MaterialPageRoute(builder: (_) => const LoginPage());
           case '/signUp':
-            return MaterialPageRoute(builder: (_) => SignUpPage());
+            return MaterialPageRoute(builder: (_) => const SignUpPage());
           case '/completeProfile':
-            return MaterialPageRoute(builder: (_) => CompleteProfilePage());
+            return MaterialPageRoute(
+                builder: (_) => const CompleteProfilePage());
           case '/welcome':
-            return MaterialPageRoute(builder: (_) => WelcomePage());
+            return MaterialPageRoute(builder: (_) => const WelcomePage());
           case '/base':
             return MaterialPageRoute(builder: (_) => Base());
           case '/chat':
-            return MaterialPageRoute(builder: (_) => ChatPage());
+            return MaterialPageRoute(builder: (_) => const ChatPage());
           case '/allChat':
-            return MaterialPageRoute(builder: (_) => AllChatPage());
+            return MaterialPageRoute(builder: (_) => const AllChatPage());
           case '/home':
             return MaterialPageRoute(builder: (_) => HomePage());
+          case '/addBook':
+            return MaterialPageRoute(builder: (_) => AddBooksPage());
           default:
             return null;
         }

@@ -1,4 +1,4 @@
-package com.example.questias
+package com.kartikey.quest
 
 import android.os.Bundle
 import io.flutter.embedding.android.FlutterActivity

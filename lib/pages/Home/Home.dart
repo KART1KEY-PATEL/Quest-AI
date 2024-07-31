@@ -25,9 +25,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<String> exampleMessage = [
     "I am a ChatBOT to help UPSC aspirants.",
-    "You can ask me any question related to History, Geography, Polity and much more.",
-    "You can also use the mic button to ask me a question. If you don't want to typ.e",
+    "You can ask me any question related to History, Geography, Polity, and much more.",
+    "You can also use the mic button to ask me a question if you don't want to type.",
   ];
+
   static const platform = MethodChannel('com.example.questias/tts');
   TextEditingController _senderMessageController = TextEditingController();
   BackendService _backendService = BackendService();
@@ -83,10 +84,20 @@ class _HomePageState extends State<HomePage> {
     double sH = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: customAppBar(
-        title: "Quest IAS",
-        centerTitle: true,
-        // elevation: 4,
-      ),
+          title: "Quest AI",
+          centerTitle: true,
+          // elevation: 4,
+          actions: [
+            IconButton(
+              onPressed: () {
+                BackendService().signOutUser();
+              },
+              icon: Icon(
+                Icons.logout,
+                color: AppColors.accentTextColor,
+              ),
+            ),
+          ]),
       body: Padding(
         padding: EdgeInsets.all(
           sH * 0.02,
@@ -133,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                     height: sH * 0.02,
                   ),
                   txt(
-                    "This is example that what can i do for you.",
+                    "This is example of what can I do for you.",
                     color: AppColors.accentTextColor,
                     size: sH * 0.018,
                   ),

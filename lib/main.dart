@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:questias/controller/book_provider.dart';
+import 'package:questias/controller/category_provider.dart';
 import 'package:questias/pages/AuthGate/auth_gate.dart';
 import 'package:questias/pages/Base/Base.dart';
 import 'package:questias/pages/Books/sub_pages/add_book.dart';
@@ -35,6 +37,8 @@ void main() async {
     providers: [
       ChangeNotifierProvider(create: (_) => OnBoardingController()),
       ChangeNotifierProvider(create: (_) => ChatController()),
+      ChangeNotifierProvider(create: (_) => CategoryProvider()),
+      ChangeNotifierProvider(create: (_) => BookProvider()),
       // Add other providers here
     ],
     child: DevicePreview(

@@ -104,4 +104,46 @@ class BackendService {
       // Handle error
     }
   }
+
+  Future<List<String>> readCategory() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('category')
+          .get()
+          .then((value) {
+        value.docs.forEach((element) {
+          print(element.data());
+        });
+      });
+    } catch (e) {
+      print("Error reading category: $e");
+      return [
+        'Developer',
+        'Designer',
+        'Consultant',
+        'Student',
+        'Add new category'
+      ];
+    }
+    return [];
+
+    // return [
+    //   'Developer',
+    //   'Designer',
+    //   'Consultant',
+    //   'Student',
+    //   'Add new category'
+    // ];
+  }
+
+  Future<void> addCategory(String category) async {
+    try {
+      await FirebaseFirestore.instance.collection('category').add({
+        'category': category,
+      });
+    } catch (e) {
+      print("Error adding category: $e");
+      // Handle error
+    }
+  }
 }

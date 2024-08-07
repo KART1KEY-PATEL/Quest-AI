@@ -52,7 +52,6 @@ class BackendService {
         password: password,
       );
 
-      // User created, store additional data to Firestore (if needed)
     } catch (e) {
       print("Error signing up: $e");
       // Handle error

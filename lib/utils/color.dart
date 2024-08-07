@@ -8,7 +8,7 @@ class AppColors {
   static const Color secondaryColor = Color(0xFFF5F5F5);
   static const Color selectedColor = Color(0xFFC2D8FF);
   static const Color unselectedColor = Color(0xFFD9D9D9);
-  
+
   // Background color
   static const Color backgroundColor = Color(0xFFFFFFFF);
 
@@ -66,4 +66,7 @@ class AppColors {
   // Warning color
   static const Color warningColor = Color(0xFF555629);
   static const Color darkWarningColor = Color(0xFF313316);
+
+  //Bottom Nav Color
+  static const Color bottomNavColor = Color(0xFFF4F4F4);
 }

@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:questias/pages/Home/controller/ChatController.dart';
-import 'package:questias/pages/Home/subPages/ChatPage.dart';
 import 'package:questias/pages/Home/subPages/SpeechRecognitionPage.dart';
-import 'package:questias/pages/Home/widgets/SenderMessageTextField.dart';
 import 'package:questias/pages/Home/widgets/SenderTextFeild.dart';
-import 'package:questias/pages/OnBoarding/controller/OnBoardingController.dart';
-import 'package:questias/pages/model/chatMessage.dart';
 import 'package:questias/pages/model/openAIChatModel.dart';
 import 'package:questias/services/BackendService.dart';
 import 'package:questias/utils/color.dart';
 import 'package:questias/utils/customAppBar.dart';
 import 'package:questias/utils/textUtil.dart';
-import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   @override
@@ -37,7 +31,6 @@ class _HomePageState extends State<HomePage> {
   String _text = "Hello, how are you?";
 
   Future<void> _speak(String text) async {
-    print("speak");
     try {
       final String result =
           await platform.invokeMethod('speak', {"text": text});
@@ -48,7 +41,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> playTextToSpeech(String text) async {
-    print("speak1");
     setState(() {
       _isLoadingVoice = true;
     });

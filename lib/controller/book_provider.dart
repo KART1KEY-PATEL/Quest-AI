@@ -51,4 +51,23 @@ class BookProvider with ChangeNotifier {
       throw e;
     }
   }
+
+  Future<void> fetchBooks() async {
+    try {
+      QuerySnapshot snapshot = await _firestore.collection('books').get();
+      _books = snapshot.docs.map((doc) {
+        return BookModel(
+          id: doc.id,
+          title: doc['title'],
+          description: doc['description'],
+          category: doc['category'],
+          bookUrl: doc['bookUrl'],
+          bookCoverUrl: doc['bookCoverUrl'],
+        );
+      }).toList();
+      notifyListeners();
+    } catch (e) {
+      print('Error fetching books: $e');
+    }
+  }
 }

@@ -8,6 +8,7 @@ import 'package:questias/controller/category_provider.dart';
 import 'package:questias/pages/AuthGate/auth_gate.dart';
 import 'package:questias/pages/Base/Base.dart';
 import 'package:questias/pages/Books/sub_pages/add_book.dart';
+import 'package:questias/pages/Books/sub_pages/view_book.dart';
 import 'package:questias/pages/Home/Home.dart';
 import 'package:questias/pages/Home/controller/ChatController.dart';
 import 'package:questias/pages/Home/subPages/AllChatPage.dart';
@@ -158,6 +159,13 @@ class _MyAppState extends State<MyApp> {
             return MaterialPageRoute(builder: (_) => HomePage());
           case '/addBook':
             return MaterialPageRoute(builder: (_) => AddBooksPage());
+          case '/viewBook':
+            return MaterialPageRoute(
+                builder: (_) => ViewPdf(
+                      title: "Book",
+                      pdfUrl:
+                          "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+                    ));
           default:
             return null;
         }

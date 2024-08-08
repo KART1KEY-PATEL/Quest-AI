@@ -18,7 +18,8 @@ import 'package:http/http.dart' as http;
 String EL_API_KEY = dotenv.env['EL_API_KEY'] as String;
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final String chatId;
+  const ChatPage({super.key, required this.chatId});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -30,10 +31,12 @@ class _ChatPageState extends State<ChatPage> {
   BackendService _backendService = BackendService();
   final player = AudioPlayer();
   bool _isLoadingVoice = false;
-
   @override
   void initState() {
     super.initState();
+    // Load messages for the current chat ID
+    Provider.of<ChatController>(context, listen: false)
+        .loadMessagesForChat(widget.chatId);
   }
 
   @override
@@ -67,27 +70,29 @@ class _ChatPageState extends State<ChatPage> {
 
   void _sendMessage(String message) async {
     if (message.isEmpty) return;
-
     final chatController = Provider.of<ChatController>(context, listen: false);
-    chatController.addMessage(OpenAIChatModel(content: message, role: "user"));
-    chatController.setLoading();
+    OpenAIChatModel newMessage =
+        OpenAIChatModel(content: message, role: "user");
 
+    // Send message to the backend
+    chatController.addMessage(widget.chatId, newMessage);
+
+    // Optionally add to local messages list for immediate UI update
+    chatController.messages.add(newMessage);
+    chatController.notifyListeners();
+
+    // Get response and update accordingly
     String response = await _backendService.getOpenAIResponse(
-      messages: chatController.messages,
-    );
-
-    chatController.setLoading();
-    chatController
-        .addMessage(OpenAIChatModel(content: response, role: "assistant"));
-
-    playTextToSpeech(response);
+        messages: chatController.messages);
+    chatController.addMessage(
+        widget.chatId, OpenAIChatModel(content: response, role: "assistant"));
   }
 
   @override
   Widget build(BuildContext context) {
     double sW = MediaQuery.of(context).size.width;
     double sH = MediaQuery.of(context).size.height;
-
+    print("ChatId from ChatPage: ${widget.chatId}");
     return Scaffold(
       appBar: customAppBar(
         title: "Hello",
@@ -97,7 +102,7 @@ class _ChatPageState extends State<ChatPage> {
             return InkWell(
               onTap: () {
                 controller.addSavedChat(ChatTile(
-                  id: "",
+                  chatId: "",
                   title: "ChatBot",
                   lastMessage: controller.messages.last.content.toString(),
                   time: DateTime.now(),
@@ -123,13 +128,15 @@ class _ChatPageState extends State<ChatPage> {
             Consumer<ChatController>(builder: (context, controller, child) {
           return InkWell(
             onTap: () {
-              controller.addChat(ChatTile(
-                id: "",
-                title: "ChatBot",
-                lastMessage: controller.messages.last.content.toString(),
-                time: DateTime.now(),
-                messages: controller.messages,
-              ));
+              controller.addChat(
+                  widget.chatId,
+                  ChatTile(
+                    chatId: widget.chatId,
+                    title: "ChatBot",
+                    lastMessage: controller.messages.last.content.toString(),
+                    time: DateTime.now(),
+                    messages: controller.messages,
+                  ));
               Navigator.pop(context);
               Navigator.pushNamed(context, '/allChat');
             },
@@ -146,85 +153,162 @@ class _ChatPageState extends State<ChatPage> {
         ),
         child: CustomScrollView(
           slivers: [
-            SliverFillRemaining(child:
-                Consumer<ChatController>(builder: (context, controller, child) {
-              return ListView.separated(
-                shrinkWrap: true,
-                separatorBuilder: (context, index) => SizedBox(
-                  height: sH * 0.02,
-                ),
-                itemBuilder: (context, index) {
-                  return Row(
-                    mainAxisAlignment: controller.messages[index].role == "user"
-                        ? MainAxisAlignment.end
-                        : MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (controller.messages[index].role == "user")
-                        Icon(
-                          Icons.content_copy,
-                          color: AppColors.accentTextColor,
-                          size: sH * 0.02,
-                        ),
-                      if (controller.messages[index].role == "user")
-                        SizedBox(
-                          width: sW * 0.015,
-                        ),
-                      Container(
-                        width: sW * 0.6,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: sW * 0.02,
-                          vertical: sH * 0.02,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12),
-                            bottomLeft:
-                                controller.messages[index].role == "user"
-                                    ? Radius.circular(12)
-                                    : Radius.circular(0),
-                            bottomRight:
-                                controller.messages[index].role == "user"
-                                    ? Radius.circular(0)
-                                    : Radius.circular(12),
+            SliverFillRemaining(
+              child: Consumer<ChatController>(
+                  builder: (context, controller, child) {
+                print(
+                    "Messages from the chat controller on chat page${controller.messages}");
+                return ListView.separated(
+                  itemCount: controller.messages.length,
+                  separatorBuilder: (context, index) => SizedBox(
+                    height: sH * 0.02,
+                  ),
+                  itemBuilder: (context, index) {
+                    return Row(
+                      mainAxisAlignment:
+                          controller.messages[index].role == "user"
+                              ? MainAxisAlignment.end
+                              : MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (controller.messages[index].role == "user")
+                          Icon(
+                            Icons.content_copy,
+                            color: AppColors.accentTextColor,
+                            size: sH * 0.02,
                           ),
-                          color: controller.messages[index].role == "user"
-                              ? AppColors.senderColor
-                              : AppColors.receiverColor,
-                        ),
-                        child: Text(
-                          controller.messages[index].content.toString(),
-                          style: TextStyle(
-                            fontSize: sH * 0.018,
+                        if (controller.messages[index].role == "user")
+                          SizedBox(
+                            width: sW * 0.015,
+                          ),
+                        Container(
+                          width: sW * 0.6,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: sW * 0.02,
+                            vertical: sH * 0.02,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(12),
+                              topRight: Radius.circular(12),
+                              bottomLeft:
+                                  controller.messages[index].role == "user"
+                                      ? Radius.circular(12)
+                                      : Radius.circular(0),
+                              bottomRight:
+                                  controller.messages[index].role == "user"
+                                      ? Radius.circular(0)
+                                      : Radius.circular(12),
+                            ),
                             color: controller.messages[index].role == "user"
-                                ? Colors.white
-                                : Colors.black,
+                                ? AppColors.senderColor
+                                : AppColors.receiverColor,
+                          ),
+                          child: Text(
+                            controller.messages[index].content.toString(),
+                            style: TextStyle(
+                              fontSize: sH * 0.018,
+                              color: controller.messages[index].role == "user"
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
                           ),
                         ),
-                      ),
-                      if (controller.messages[index].role == "assistant")
-                        SizedBox(
-                          width: sW * 0.015,
-                        ),
-                      if (controller.messages[index].role == "assistant")
-                        Icon(
-                          Icons.content_copy,
-                          color: AppColors.accentTextColor,
-                          size: sH * 0.02,
-                        ),
-                    ],
-                  );
-                },
-                itemCount: controller.messages.length,
-              );
-            })),
+                        if (controller.messages[index].role == "assistant")
+                          SizedBox(
+                            width: sW * 0.015,
+                          ),
+                        if (controller.messages[index].role == "assistant")
+                          Icon(
+                            Icons.content_copy,
+                            color: AppColors.accentTextColor,
+                            size: sH * 0.02,
+                          ),
+                      ],
+                    );
+                  },
+                );
+              }),
+            )
+            //     Consumer<ChatController>(builder: (context, controller, child) {
+            //   return ListView.separated(
+            //     shrinkWrap: true,
+            //     separatorBuilder: (context, index) => SizedBox(
+            //       height: sH * 0.02,
+            //     ),
+            //     itemBuilder: (context, index) {
+            //       return Row(
+            //         mainAxisAlignment: controller.messages[index].role == "user"
+            //             ? MainAxisAlignment.end
+            //             : MainAxisAlignment.start,
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: [
+            //           if (controller.messages[index].role == "user")
+            //             Icon(
+            //               Icons.content_copy,
+            //               color: AppColors.accentTextColor,
+            //               size: sH * 0.02,
+            //             ),
+            //           if (controller.messages[index].role == "user")
+            //             SizedBox(
+            //               width: sW * 0.015,
+            //             ),
+            //           Container(
+            //             width: sW * 0.6,
+            //             padding: EdgeInsets.symmetric(
+            //               horizontal: sW * 0.02,
+            //               vertical: sH * 0.02,
+            //             ),
+            //             decoration: BoxDecoration(
+            //               borderRadius: BorderRadius.only(
+            //                 topLeft: Radius.circular(12),
+            //                 topRight: Radius.circular(12),
+            //                 bottomLeft:
+            //                     controller.messages[index].role == "user"
+            //                         ? Radius.circular(12)
+            //                         : Radius.circular(0),
+            //                 bottomRight:
+            //                     controller.messages[index].role == "user"
+            //                         ? Radius.circular(0)
+            //                         : Radius.circular(12),
+            //               ),
+            //               color: controller.messages[index].role == "user"
+            //                   ? AppColors.senderColor
+            //                   : AppColors.receiverColor,
+            //             ),
+            //             child: Text(
+            //               controller.messages[index].content.toString(),
+            //               style: TextStyle(
+            //                 fontSize: sH * 0.018,
+            //                 color: controller.messages[index].role == "user"
+            //                     ? Colors.white
+            //                     : Colors.black,
+            //               ),
+            //             ),
+            //           ),
+            //           if (controller.messages[index].role == "assistant")
+            //             SizedBox(
+            //               width: sW * 0.015,
+            //             ),
+            //           if (controller.messages[index].role == "assistant")
+            //             Icon(
+            //               Icons.content_copy,
+            //               color: AppColors.accentTextColor,
+            //               size: sH * 0.02,
+            //             ),
+            //         ],
+            //       );
+            //     },
+            //     itemCount: controller.messages.length,
+            //   );
+            // })),
           ],
         ),
       ),
       persistentFooterAlignment: AlignmentDirectional.center,
       persistentFooterButtons: [
         SenderTextField(
+          chatId: widget.chatId,
           homePage: false,
           sW: sW,
           sH: sH,
@@ -235,7 +319,9 @@ class _ChatPageState extends State<ChatPage> {
             final result = await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => SpeechRecognitionPage(),
+                builder: (context) => SpeechRecognitionPage(
+                  chatId: widget.chatId,
+                ),
               ),
             );
             // if (result != null && result is String) {

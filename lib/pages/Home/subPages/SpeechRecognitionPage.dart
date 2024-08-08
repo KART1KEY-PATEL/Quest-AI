@@ -12,6 +12,8 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class SpeechRecognitionPage extends StatefulWidget {
+  final String chatId;
+  const SpeechRecognitionPage({Key? key, required this.chatId}) : super(key: key);
   @override
   _SpeechRecognitionPageState createState() => _SpeechRecognitionPageState();
 }
@@ -121,14 +123,14 @@ class _SpeechRecognitionPageState extends State<SpeechRecognitionPage> {
     });
     if (message.isEmpty) return;
     final chatController = Provider.of<ChatController>(context, listen: false);
-    chatController.addMessage(OpenAIChatModel(content: message, role: "user"));
+    chatController.addMessage(widget.chatId, OpenAIChatModel(content: message, role: "user"));
     chatController.setLoading();
     String response = await _backendService.getOpenAIResponse(
       messages: chatController.messages,
     );
     chatController.setLoading();
     chatController
-        .addMessage(OpenAIChatModel(content: response, role: "assistant"));
+        .addMessage(widget.chatId, OpenAIChatModel(content: response, role: "assistant"));
 
     // await Future.delayed(Duration(milliseconds: 3000), () {
     //   print("Delay calledn");

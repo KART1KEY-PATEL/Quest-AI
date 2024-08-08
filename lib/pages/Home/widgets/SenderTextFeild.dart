@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:questias/pages/Home/controller/ChatController.dart';
+import 'package:questias/pages/Home/subPages/ChatPage.dart';
+import 'package:questias/pages/model/chatTile.dart';
 import 'package:questias/pages/model/openAIChatModel.dart';
 import 'package:questias/services/BackendService.dart';
 import 'package:questias/utils/color.dart';
@@ -16,6 +18,7 @@ class SenderTextField extends StatelessWidget {
     required this.speechEnabled,
     required this.startListening,
     required this.stopListening,
+    required this.chatId,
   }) : _senderMessageController = senderMessageController;
 
   final double sW;
@@ -26,6 +29,7 @@ class SenderTextField extends StatelessWidget {
   final Function startListening;
   final bool homePage;
   final Function stopListening;
+  final String chatId;
   BackendService _backendService = BackendService();
 
   @override
@@ -85,8 +89,15 @@ class SenderTextField extends StatelessWidget {
               Consumer<ChatController>(builder: (context, controller, child) {
             return InkWell(
               onTap: () async {
-                homePage ? Navigator.pushNamed(context, '/chat') : null;
+                homePage
+                    ? Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ChatPage(chatId: chatId)),
+                      )
+                    : null;
                 controller.addMessage(
+                  chatId,
                   OpenAIChatModel(
                     content: _senderMessageController.text,
                     role: "user",
@@ -98,6 +109,7 @@ class SenderTextField extends StatelessWidget {
                 );
                 controller.setLoading();
                 controller.addMessage(
+                  chatId,
                   OpenAIChatModel(
                     content: response,
                     role: "assistant",

@@ -15,4 +15,19 @@ class OpenAIChatModel {
       'content': content,
     };
   }
+  Map<String, dynamic> toMap() {
+    return {
+      'content': content,
+      'role': role,
+      // Add other fields here
+    };
+  }
+
+  factory OpenAIChatModel.fromMap(Map<String, dynamic> map) {
+    return OpenAIChatModel(
+      content: map['content'],
+      role: map['role'],
+      // Parse other fields here
+    );
+  }
 }

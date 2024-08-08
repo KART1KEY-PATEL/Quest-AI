@@ -10,6 +10,7 @@ import 'package:questias/services/BackendService.dart';
 import 'package:questias/utils/color.dart';
 import 'package:questias/utils/customAppBar.dart';
 import 'package:questias/utils/textUtil.dart';
+import 'package:uuid/uuid.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -29,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   bool _isLoadingVoice = false;
   final player = AudioPlayer();
   String _text = "Hello, how are you?";
+  String chatId = Uuid().v4(); // Generate a unique chatId for the session
 
   Future<void> _speak(String text) async {
     try {
@@ -56,7 +58,8 @@ class _HomePageState extends State<HomePage> {
     if (message.isEmpty) return;
 
     final chatController = Provider.of<ChatController>(context, listen: false);
-    chatController.addMessage(OpenAIChatModel(content: message, role: "user"));
+    chatController.addMessage(
+        chatId, OpenAIChatModel(content: message, role: "user"));
     chatController.setLoading();
 
     String response = await _backendService.getOpenAIResponse(
@@ -64,8 +67,8 @@ class _HomePageState extends State<HomePage> {
     );
     print(response);
     chatController.setLoading();
-    chatController
-        .addMessage(OpenAIChatModel(content: response, role: "assistant"));
+    chatController.addMessage(
+        chatId, OpenAIChatModel(content: response, role: "assistant"));
 
     playTextToSpeech(response);
   }
@@ -79,6 +82,14 @@ class _HomePageState extends State<HomePage> {
           title: "Quest AI",
           centerTitle: true,
           // elevation: 4,
+          leading: InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, '/allChat');
+            },
+            child: Icon(
+              Icons.menu,
+            ),
+          ),
           actions: [
             IconButton(
               onPressed: () {
@@ -151,6 +162,7 @@ class _HomePageState extends State<HomePage> {
       ),
       persistentFooterButtons: [
         SenderTextField(
+          chatId: chatId,
           sW: sW,
           sH: sH,
           senderMessageController: _senderMessageController,
@@ -161,7 +173,9 @@ class _HomePageState extends State<HomePage> {
             final result = await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => SpeechRecognitionPage(),
+                builder: (context) => SpeechRecognitionPage(
+                  chatId: chatId,
+                ),
               ),
             );
           },

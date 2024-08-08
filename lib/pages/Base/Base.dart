@@ -3,6 +3,7 @@ import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:questias/pages/Books/Book.dart';
 import 'package:questias/pages/Books/sub_pages/add_book.dart';
 import 'package:questias/pages/Home/Home.dart';
+import 'package:questias/pages/Home/subPages/AllChatPage.dart';
 import 'package:questias/pages/SavedChat/SavedChat.dart';
 import 'package:questias/utils/color.dart';
 import 'package:questias/utils/customNavBar.dart';
@@ -16,6 +17,7 @@ class Base extends StatelessWidget {
           PersistentTabConfig(
             screen: HomePage(),
             // screen: SavedChatPage(),
+            // screen: AllChatPage(),
             item: ItemConfig(
               icon: Icon(
                 Icons.question_answer,

@@ -152,7 +152,7 @@ class _MyAppState extends State<MyApp> {
           case '/base':
             return MaterialPageRoute(builder: (_) => Base());
           case '/chat':
-            return MaterialPageRoute(builder: (_) => const ChatPage());
+            return MaterialPageRoute(builder: (_) => const ChatPage(chatId: "",));
           case '/allChat':
             return MaterialPageRoute(builder: (_) => const AllChatPage());
           case '/home':

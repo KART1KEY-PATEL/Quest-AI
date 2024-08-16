@@ -25,6 +25,7 @@ class AppColors {
   static const Color secondarySVGColor = Color(0xFF999EA8);
   static const Color lightSVGContainer = Color(0xFF161A50);
   static const Color darkSVGContainer = Color(0xFF4362FF);
+  static const Color blackSVG = Color(0xFF000000);
 
   // Text colors
   static const Color primaryTextColor = Color(0xFF000000);
@@ -69,4 +70,10 @@ class AppColors {
 
   //Bottom Nav Color
   static const Color bottomNavColor = Color(0xFFF4F4F4);
+
+  //Payment Options Container color
+  static const Color currentPlanBorder = Color(0xffe30613);
+  static const Color basicPlanColor = Color(0xffcaf0f8);
+  static const Color plusPlanColor = Color(0xff48cae4);
+  static const Color advancedPlanColor = Color(0xff0096c7);
 }

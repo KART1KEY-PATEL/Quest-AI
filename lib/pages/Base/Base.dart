@@ -4,7 +4,8 @@ import 'package:questias/pages/Books/Book.dart';
 import 'package:questias/pages/Books/sub_pages/add_book.dart';
 import 'package:questias/pages/Home/Home.dart';
 import 'package:questias/pages/Home/subPages/AllChatPage.dart';
-import 'package:questias/pages/SavedChat/SavedChat.dart';
+import 'package:questias/pages/Profile/profile_page.dart';
+import 'package:questias/pages/Profile/sub_pages/subscription_page.dart';
 import 'package:questias/utils/color.dart';
 import 'package:questias/utils/customNavBar.dart';
 
@@ -15,8 +16,10 @@ class Base extends StatelessWidget {
       body: PersistentTabView(
         tabs: [
           PersistentTabConfig(
-            screen: HomePage(),
-            // screen: SavedChatPage(),
+            // screen: HomePage(),
+            // screen: ProfilePage(),
+            screen: SubscriptionPage(),
+
             // screen: AllChatPage(),
             item: ItemConfig(
               icon: Icon(
@@ -37,7 +40,7 @@ class Base extends StatelessWidget {
             ),
           ),
           PersistentTabConfig(
-            screen: SavedChatPage(),
+            screen: ProfilePage(),
             item: ItemConfig(
               icon: Icon(
                 Icons.bookmark_border,
@@ -48,6 +51,7 @@ class Base extends StatelessWidget {
           ),
         ],
         navBarBuilder: (navBarConfig) => CustomNavBar(
+        
           navBarDecoration: const NavBarDecoration(
             color: AppColors.primaryBottomNavBar,
             padding: EdgeInsets.only(

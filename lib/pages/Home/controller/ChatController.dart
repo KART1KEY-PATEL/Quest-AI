@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:questias/pages/model/chatMessage.dart';
-import 'package:questias/pages/model/chatTile.dart';
-import 'package:questias/pages/model/openAIChatModel.dart';
+import 'package:questias/models/chatMessage.dart';
+import 'package:questias/models/chatTile.dart';
+import 'package:questias/models/openAIChatModel.dart';
 
 class ChatController with ChangeNotifier {
   List<OpenAIChatModel> messages = [];
@@ -20,19 +20,33 @@ class ChatController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addSavedChat(ChatTile chatTile) async {
-    savedChats.add(chatTile);
-    await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('chats')
-        .doc(chatTile.chatId)
-        .set({
-      'createdAt': Timestamp.now(),
-      'chat': chatTile.toMap(),
-    });
-    notifyListeners();
-  }
+  // Future<void> addSavedChat(ChatTile chatTile) async {
+  //   // Ensure a unique chat ID for the saved chat, if it's not provided
+  //   String savedChatId = chatTile.chatId.isEmpty
+  //       ? FirebaseFirestore.instance.collection('savedChats').doc().id
+  //       : chatTile.chatId;
+
+  //   // Reference to the new saved chat document
+  //   DocumentReference savedChatRef = _firestore
+  //       .collection('users')
+  //       .doc(userId)
+  //       .collection('savedChats') // Note: using 'savedChats' instead of 'chats'
+  //       .doc(savedChatId);
+
+  //   final snapshot = await savedChatRef.get();
+
+  //   if (!snapshot.exists) {
+  //     await savedChatRef.set({
+  //       'createdAt': Timestamp.now(), // Ensure this is outside the 'chat' map
+  //       'chat': chatTile.toMap(),
+  //       'messages': chatTile.messages.map((m) => m.toMap()).toList(),
+  //     }, SetOptions(merge: true));
+  //     savedChats.add(chatTile); // Add to the local list of saved chats
+  //     notifyListeners();
+  //   } else {
+  //     print("Chat already exists in saved chats");
+  //   }
+  // }
 
   Future<void> addChat(String chatId, ChatTile chatTile) async {
     DocumentReference chatRef = _firestore

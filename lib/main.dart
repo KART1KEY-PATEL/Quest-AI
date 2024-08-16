@@ -3,8 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:questias/controller/book_provider.dart';
-import 'package:questias/controller/category_provider.dart';
 import 'package:questias/pages/AuthGate/auth_gate.dart';
 import 'package:questias/pages/Base/Base.dart';
 import 'package:questias/pages/Books/sub_pages/add_book.dart';
@@ -15,10 +13,15 @@ import 'package:questias/pages/Home/subPages/AllChatPage.dart';
 import 'package:questias/pages/Home/subPages/ChatPage.dart';
 import 'package:questias/pages/OnBoarding/OnBoarding.dart';
 import 'package:questias/pages/OnBoarding/controller/OnBoardingController.dart';
+import 'package:questias/pages/Profile/sub_pages/subscription_page.dart';
 import 'package:questias/pages/UserOnBoarding/CompleteProfile.dart';
 import 'package:questias/pages/UserOnBoarding/Login.dart';
 import 'package:questias/pages/UserOnBoarding/SignUp.dart';
 import 'package:questias/pages/Welcome/Welcome.dart';
+import 'package:questias/providers/book_provider.dart';
+import 'package:questias/providers/category_provider.dart';
+import 'package:questias/providers/subscription_provider.dart';
+import 'package:questias/providers/user_provider.dart'; // Import the UserProvider
 import 'package:questias/utils/color.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -40,6 +43,9 @@ void main() async {
       ChangeNotifierProvider(create: (_) => ChatController()),
       ChangeNotifierProvider(create: (_) => CategoryProvider()),
       ChangeNotifierProvider(create: (_) => BookProvider()),
+      ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
+      ChangeNotifierProvider(
+          create: (_) => UserProvider()), // Add UserProvider here
       // Add other providers here
     ],
     child: DevicePreview(
@@ -57,6 +63,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData(); // Fetch user data on initialization
+  }
+
+  Future<void> _fetchUserData() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    await userProvider.fetchUser(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -130,7 +147,6 @@ class _MyAppState extends State<MyApp> {
 
           if (snapshot.hasData) {
             print("User is logged in");
-
             return Base();
           }
 
@@ -152,7 +168,10 @@ class _MyAppState extends State<MyApp> {
           case '/base':
             return MaterialPageRoute(builder: (_) => Base());
           case '/chat':
-            return MaterialPageRoute(builder: (_) => const ChatPage(chatId: "",));
+            return MaterialPageRoute(
+                builder: (_) => const ChatPage(
+                      chatId: "",
+                    ));
           case '/allChat':
             return MaterialPageRoute(builder: (_) => const AllChatPage());
           case '/home':
@@ -166,6 +185,8 @@ class _MyAppState extends State<MyApp> {
                       pdfUrl:
                           "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
                     ));
+          case '/subscriptionPage':
+            return MaterialPageRoute(builder: (_) => SubscriptionPage());
           default:
             return null;
         }

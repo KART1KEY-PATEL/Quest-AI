@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:questias/providers/user_provider.dart';
 import 'package:questias/services/BackendService.dart';
 import 'package:questias/utils/customAppBar.dart';
 import 'package:questias/utils/customTextField.dart';
@@ -19,19 +20,22 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   BackendService backendService = BackendService();
-
+  UserProvider userProvider = UserProvider();
   void onSubmit() async {
     await backendService.signUpWithEmailAndPassword(
       emailController.text,
       passwordController.text,
+      nameController.text,
+      userProvider,
     );
-    var userId = FirebaseAuth.instance.currentUser!.uid;
-    await backendService.addUserToFirestore(
-      userId: userId,
-      email: emailController.text,
-      name: nameController.text,
-      password: passwordController.text,
-    );
+    // var userId = FirebaseAuth.instance.currentUser!.uid;
+    // print("Is user logged in");
+    // await backendService.addUserToFirestore(
+    //   userId: userId,
+    //   email: emailController.text,
+    //   name: nameController.text,
+    //   password: passwordController.text,
+    // );
   }
 
   @override

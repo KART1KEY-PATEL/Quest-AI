@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:questias/pages/model/openAIChatModel.dart';
+import 'package:questias/models/openAIChatModel.dart';
 
 class ChatTile {
   String chatId;

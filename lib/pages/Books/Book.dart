@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:questias/controller/book_provider.dart';
-import 'package:questias/controller/category_provider.dart';
+import 'package:questias/providers/book_provider.dart';
+import 'package:questias/providers/category_provider.dart';
 import 'package:questias/models/book_model.dart';
 import 'package:questias/pages/Books/sub_pages/view_book.dart';
 import 'package:questias/utils/color.dart';

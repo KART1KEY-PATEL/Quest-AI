@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:questias/pages/Home/controller/ChatController.dart';
 import 'package:questias/pages/Home/subPages/SpeechRecognitionPage.dart';
 import 'package:questias/pages/Home/widgets/SenderTextFeild.dart';
-import 'package:questias/pages/model/openAIChatModel.dart';
+import 'package:questias/models/openAIChatModel.dart';
 import 'package:questias/services/BackendService.dart';
 import 'package:questias/utils/color.dart';
 import 'package:questias/utils/customAppBar.dart';

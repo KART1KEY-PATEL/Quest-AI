@@ -8,8 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:questias/pages/Home/controller/ChatController.dart';
 import 'package:questias/pages/Home/subPages/SpeechRecognitionPage.dart';
 import 'package:questias/pages/Home/widgets/SenderTextFeild.dart';
-import 'package:questias/pages/model/chatTile.dart';
-import 'package:questias/pages/model/openAIChatModel.dart';
+import 'package:questias/models/chatTile.dart';
+import 'package:questias/models/openAIChatModel.dart';
 import 'package:questias/utils/color.dart';
 import 'package:questias/utils/customAppBar.dart';
 import 'package:questias/services/BackendService.dart';
@@ -97,33 +97,33 @@ class _ChatPageState extends State<ChatPage> {
       appBar: customAppBar(
         title: "Hello",
         centerTitle: true,
-        actions: [
-          Consumer<ChatController>(builder: (context, controller, child) {
-            return InkWell(
-              onTap: () {
-                controller.addSavedChat(ChatTile(
-                  chatId: "",
-                  title: "ChatBot",
-                  lastMessage: controller.messages.last.content.toString(),
-                  time: DateTime.now(),
-                  messages: controller.messages,
-                ));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Chat saved successfully!'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              },
-              child: Icon(
-                Icons.bookmark_add,
-              ),
-            );
-          }),
-          SizedBox(
-            width: 10,
-          )
-        ],
+        // actions: [
+        //   Consumer<ChatController>(builder: (context, controller, child) {
+        //     return InkWell(
+        //       onTap: () {
+        //         controller.addSavedChat(ChatTile(
+        //           chatId: widget.chatId,
+        //           title: "",
+        //           lastMessage: controller.messages.last.content.toString(),
+        //           time: DateTime.now(),
+        //           messages: controller.messages,
+        //         ));
+        //         ScaffoldMessenger.of(context).showSnackBar(
+        //           SnackBar(
+        //             content: Text('Chat saved successfully!'),
+        //             duration: Duration(seconds: 2),
+        //           ),
+        //         );
+        //       },
+        //       child: Icon(
+        //         Icons.bookmark_add,
+        //       ),
+        //     );
+        //   }),
+        //   SizedBox(
+        //     width: 10,
+        //   )
+        // ],
         leading:
             Consumer<ChatController>(builder: (context, controller, child) {
           return InkWell(

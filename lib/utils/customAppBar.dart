@@ -7,7 +7,7 @@ PreferredSizeWidget customAppBar({
   required String title,
   List<Widget>? actions,
   Widget? leading,
-  Color backgroundColor = Colors.white,
+  Color backgroundColor = AppColors.primaryColor,
   Color titleColor = AppColors.primaryTextColor,
   double elevation = 0.0,
   bool centerTitle = false,

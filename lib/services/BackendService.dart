@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:questias/pages/model/openAIChatModel.dart';
+import 'package:provider/provider.dart';
+import 'package:questias/models/openAIChatModel.dart';
+import 'package:questias/models/user_model.dart';
+import 'package:questias/providers/user_provider.dart';
 
 class BackendService {
   Future<String> getOpenAIResponse(
@@ -42,9 +45,10 @@ class BackendService {
       print('Exception: $e');
       throw Exception('Failed to load response');
     }
-  }
-
-  Future<void> signUpWithEmailAndPassword(String email, String password) async {
+  } 
+  
+  Future<void> signUpWithEmailAndPassword(
+      String email, String password, String name, UserProvider userProvider) async {
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -52,6 +56,15 @@ class BackendService {
         password: password,
       );
 
+      // After successful sign-up, add user to Firestore and update provider
+      await addUserToFirestore(
+        userId: userCredential.user!.uid,
+        email: email,
+        name: name,
+        password: password,
+        userProvider: userProvider,
+      );
+      print("User Creation Done ${userCredential.credential}");
     } catch (e) {
       print("Error signing up: $e");
       // Handle error
@@ -59,7 +72,8 @@ class BackendService {
   }
 
   // Sign In with Email/Password
-  Future<bool> signInWithEmailAndPassword(String email, String password) async {
+  Future<bool> signInWithEmailAndPassword(
+      String email, String password) async {
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -89,15 +103,27 @@ class BackendService {
     required String email,
     required String name,
     required String password,
+    required UserProvider userProvider,
   }) async {
     try {
+      // Add user to Firestore
       await FirebaseFirestore.instance.collection('users').doc(userId).set({
         'email': email,
         'name': name,
         'password': password,
-
+        'plan': 'basic',
         // Add more fields as needed
       });
+
+      // Update the UserProvider with the new user's data
+      userProvider.user = UserModel(
+        id: userId,
+        email: email,
+        name: name,
+        password: password,
+        plan: 'basic',
+      );
+      userProvider.notifyListeners();
     } catch (e) {
       print("Error adding user to Firestore: $e");
       // Handle error
@@ -125,14 +151,6 @@ class BackendService {
       ];
     }
     return [];
-
-    // return [
-    //   'Developer',
-    //   'Designer',
-    //   'Consultant',
-    //   'Student',
-    //   'Add new category'
-    // ];
   }
 
   Future<void> addCategory(String category) async {

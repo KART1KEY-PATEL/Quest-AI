@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:questias/pages/Home/controller/ChatController.dart';
 import 'package:questias/pages/Home/subPages/ChatPage.dart';
-import 'package:questias/pages/model/chatTile.dart';
-import 'package:questias/pages/model/openAIChatModel.dart';
+import 'package:questias/models/chatTile.dart';
+import 'package:questias/models/openAIChatModel.dart';
 import 'package:questias/services/BackendService.dart';
 import 'package:questias/utils/color.dart';
 

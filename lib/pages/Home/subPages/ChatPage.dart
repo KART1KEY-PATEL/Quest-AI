@@ -97,33 +97,7 @@ class _ChatPageState extends State<ChatPage> {
       appBar: customAppBar(
         title: "Hello",
         centerTitle: true,
-        // actions: [
-        //   Consumer<ChatController>(builder: (context, controller, child) {
-        //     return InkWell(
-        //       onTap: () {
-        //         controller.addSavedChat(ChatTile(
-        //           chatId: widget.chatId,
-        //           title: "",
-        //           lastMessage: controller.messages.last.content.toString(),
-        //           time: DateTime.now(),
-        //           messages: controller.messages,
-        //         ));
-        //         ScaffoldMessenger.of(context).showSnackBar(
-        //           SnackBar(
-        //             content: Text('Chat saved successfully!'),
-        //             duration: Duration(seconds: 2),
-        //           ),
-        //         );
-        //       },
-        //       child: Icon(
-        //         Icons.bookmark_add,
-        //       ),
-        //     );
-        //   }),
-        //   SizedBox(
-        //     width: 10,
-        //   )
-        // ],
+      
         leading:
             Consumer<ChatController>(builder: (context, controller, child) {
           return InkWell(

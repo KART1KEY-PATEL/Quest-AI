@@ -6,6 +6,8 @@ class UserModel {
   String email;
   String password;
   String plan;
+  String phone;
+  String imageUrl;
 
   UserModel({
     required this.id,
@@ -13,6 +15,8 @@ class UserModel {
     required this.email,
     required this.password,
     required this.plan,
+    required this.phone,
+    required this.imageUrl,
   });
 
   // Convert a Firestore document to a UserModel
@@ -24,6 +28,8 @@ class UserModel {
       email: data['email'] ?? '',
       password: data['password'] ?? '',
       plan: data['plan'] ?? '',
+      phone: data['phone'] ?? '',
+      imageUrl: data['imageUrl'] ?? '',
     );
   }
 
@@ -34,6 +40,8 @@ class UserModel {
       'email': email,
       'password': password,
       'plan': plan,
+      'phone': phone,
+      'imageUrl': imageUrl,
     };
   }
 }

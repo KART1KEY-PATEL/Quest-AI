@@ -7,7 +7,7 @@ import 'package:questias/providers/subscription_provider.dart';
 
 class UserProvider with ChangeNotifier {
   UserModel? user;
-
+  
   Future<void> fetchUser(BuildContext context) async {
     try {
       // Get the current user

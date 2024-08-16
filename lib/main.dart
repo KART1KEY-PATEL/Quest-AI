@@ -13,6 +13,7 @@ import 'package:questias/pages/Home/subPages/AllChatPage.dart';
 import 'package:questias/pages/Home/subPages/ChatPage.dart';
 import 'package:questias/pages/OnBoarding/OnBoarding.dart';
 import 'package:questias/pages/OnBoarding/controller/OnBoardingController.dart';
+import 'package:questias/pages/Profile/sub_pages/edit_profile_page.dart';
 import 'package:questias/pages/Profile/sub_pages/subscription_page.dart';
 import 'package:questias/pages/UserOnBoarding/CompleteProfile.dart';
 import 'package:questias/pages/UserOnBoarding/Login.dart';
@@ -187,6 +188,8 @@ class _MyAppState extends State<MyApp> {
                     ));
           case '/subscriptionPage':
             return MaterialPageRoute(builder: (_) => SubscriptionPage());
+          case '/editProfilePage':
+            return MaterialPageRoute(builder: (_) => EditProfilePage());
           default:
             return null;
         }

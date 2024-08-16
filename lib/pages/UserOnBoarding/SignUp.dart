@@ -1,7 +1,13 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:questias/providers/user_provider.dart';
 import 'package:questias/services/BackendService.dart';
+import 'package:questias/utils/color.dart';
 import 'package:questias/utils/customAppBar.dart';
 import 'package:questias/utils/customTextField.dart';
 import 'package:questias/utils/textUtil.dart';
@@ -19,27 +25,58 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+
   BackendService backendService = BackendService();
   UserProvider userProvider = UserProvider();
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
+
   void onSubmit() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+    String? imageUrl;
+    if (_image != null) {
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('user_images/${DateTime.now()}.jpg');
+      await storageRef.putFile(_image!);
+      imageUrl = await storageRef.getDownloadURL();
+    }
     await backendService.signUpWithEmailAndPassword(
       emailController.text,
       passwordController.text,
       nameController.text,
       userProvider,
+      phoneController.text,
+      imageUrl ?? "",
     );
-    // var userId = FirebaseAuth.instance.currentUser!.uid;
-    // print("Is user logged in");
-    // await backendService.addUserToFirestore(
-    //   userId: userId,
-    //   email: emailController.text,
-    //   name: nameController.text,
-    //   password: passwordController.text,
-    // );
+    Navigator.pop(context);
+    Navigator.of(context)
+        .pushNamedAndRemoveUntil('/base', (Route<dynamic> route) => false);
+  }
+
+  Future<void> _pickImage() async {
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    double sH = MediaQuery.of(context).size.height;
+    double sW = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: customAppBar(
         title: "",
@@ -70,7 +107,51 @@ class _SignUpPageState extends State<SignUpPage> {
                 color: Colors.grey.shade400,
               ),
               const SizedBox(
-                height: 60,
+                height: 10,
+              ),
+              InkWell(
+                onTap: _pickImage,
+                child: Stack(
+                  children: [
+                    Container(
+                      height: sH * 0.14,
+                      width: sW * 0.5,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey.shade200,
+                        image: _image != null
+                            ? DecorationImage(
+                                image: FileImage(_image!),
+                                fit: BoxFit.cover,
+                              )
+                            : const DecorationImage(
+                                image: AssetImage(
+                                    "assets/images/default_profile.png"),
+                              ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: sH * 0.001,
+                      right: sW * 0.14,
+                      child: Container(
+                        height: sH * 0.03,
+                        width: sH * 0.03,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.primaryButtonColor,
+                        ),
+                        child: Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                          size: sH * 0.02,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: sH * 0.02,
               ),
               CustomTextField(
                 hintText: "Enter your Name",
@@ -78,7 +159,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 validate: true,
                 maxLines: 1,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               CustomTextField(
@@ -87,7 +168,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 validate: true,
                 maxLines: 1,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               CustomTextField(
@@ -96,7 +177,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 validate: true,
                 maxLines: 1,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               CustomTextField(
@@ -132,9 +213,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 height: 30,
               ),
               InkWell(
-                onTap: () {
-                  onSubmit();
-                },
+                onTap: onSubmit,
                 child: Container(
                   decoration: BoxDecoration(
                     color: const Color(0xFF17C3CE),
@@ -222,7 +301,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: Image.asset("assets/icons/google.png")),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

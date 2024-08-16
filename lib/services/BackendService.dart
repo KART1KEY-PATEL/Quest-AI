@@ -48,7 +48,7 @@ class BackendService {
   } 
   
   Future<void> signUpWithEmailAndPassword(
-      String email, String password, String name, UserProvider userProvider) async {
+      String email, String password, String name, UserProvider userProvider, String phone, String imageUrl,) async {
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -63,6 +63,9 @@ class BackendService {
         name: name,
         password: password,
         userProvider: userProvider,
+        phone: phone,
+        imageUrl: imageUrl,
+
       );
       print("User Creation Done ${userCredential.credential}");
     } catch (e) {
@@ -103,6 +106,8 @@ class BackendService {
     required String email,
     required String name,
     required String password,
+    required String phone,
+    required String imageUrl,
     required UserProvider userProvider,
   }) async {
     try {
@@ -112,6 +117,9 @@ class BackendService {
         'name': name,
         'password': password,
         'plan': 'basic',
+        'phone': phone,
+        'imageUrl': imageUrl,
+
         // Add more fields as needed
       });
 
@@ -122,6 +130,8 @@ class BackendService {
         name: name,
         password: password,
         plan: 'basic',
+        phone: phone,
+        imageUrl: imageUrl,
       );
       userProvider.notifyListeners();
     } catch (e) {

@@ -1,65 +1,75 @@
 import 'package:flutter/material.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:questias/pages/Books/Book.dart';
-import 'package:questias/pages/Books/sub_pages/add_book.dart';
 import 'package:questias/pages/Home/Home.dart';
-import 'package:questias/pages/Home/subPages/AllChatPage.dart';
 import 'package:questias/pages/Profile/profile_page.dart';
-import 'package:questias/pages/Profile/sub_pages/subscription_page.dart';
 import 'package:questias/utils/color.dart';
-import 'package:questias/utils/customNavBar.dart';
 
-class Base extends StatelessWidget {
+class Base extends StatefulWidget {
+  const Base({super.key});
+
+  @override
+  State<Base> createState() => _BaseState();
+}
+
+class _BaseState extends State<Base> {
+  bool isLoading = true;
+  bool isCompany = false;
+  final List _screens = [
+    // HomePage(),
+    const ProfilePage(),
+    BookPage(),
+    const ProfilePage(),
+  ];
+  int _currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PersistentTabView(
-        tabs: [
-          PersistentTabConfig(
-            // screen: HomePage(),
-            // screen: ProfilePage(),
-            screen: SubscriptionPage(),
-
-            // screen: AllChatPage(),
-            item: ItemConfig(
+      body: _screens[_currentIndex],
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          canvasColor: AppColors.primaryBottomNavBar,
+        ),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: AppColors.activeSVGBottomNavBar,
+          unselectedItemColor: AppColors.inactiveSVGBottomNavBar,
+          selectedLabelStyle: const TextStyle(
+            color: AppColors.activeSVGBottomNavBar,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            color: AppColors.inactiveSVGBottomNavBar,
+          ),
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(
               icon: Icon(
                 Icons.question_answer,
                 size: 28,
               ),
-              title: "Chat",
+              label: 'Home',
             ),
-          ),
-          PersistentTabConfig(
-            screen: BookPage(),
-            item: ItemConfig(
+            BottomNavigationBarItem(
               icon: Icon(
                 Icons.library_books,
                 size: 28,
               ),
-              title: "Books",
+              label: 'Books',
             ),
-          ),
-          PersistentTabConfig(
-            screen: ProfilePage(),
-            item: ItemConfig(
+            BottomNavigationBarItem(
               icon: Icon(
-                Icons.bookmark_border,
+                Icons.person,
                 size: 28,
               ),
-              title: "Saved",
+              label: 'Profile',
             ),
-          ),
-        ],
-        navBarBuilder: (navBarConfig) => CustomNavBar(
-        
-          navBarDecoration: const NavBarDecoration(
-            color: AppColors.primaryBottomNavBar,
-            padding: EdgeInsets.only(
-              top: 8,
-              bottom: 2,
-            ),
-          ),
-          navBarConfig: navBarConfig,
+          ],
         ),
       ),
     );

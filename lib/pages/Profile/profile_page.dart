@@ -56,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   width: sW,
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.bottomNavColor,
+                    color: AppColors.secondaryColor,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(

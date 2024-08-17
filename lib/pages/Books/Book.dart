@@ -45,15 +45,27 @@ class _BookPageState extends State<BookPage> {
     }
   }
 
-  List<Color> colors = [
-    Color(0xFFB8F2E6),
-    Color(0xFFFFA69E),
-    Color(0xFFFAF3DD),
-    Color(0xFFAED9E0),
-    Color(0xFFdde5b6),
-    Color(0xFFf0ead2),
-    Color(0xFFf0ead2),
-  ];
+  // List<Color> colors = const [
+  //   Color(0xFF2d0c1d), // dark-purple
+  //   Color(0xFF2b1224), // dark-purple-2
+  //   Color(0xFF291830), // dark-purple-3
+  //   Color(0xFF1e162a), // dark-purple-4
+  //   Color(0xFF231b35), // dark-purple-5
+  //   Color(0xFF23223d), // space-cadet
+  //   Color(0xFF1e3447), // prussian-blue
+  //   Color(0xFF142135), // oxford-blue
+  //   Color(0xFF161b2e), // oxford-blue-2
+  //   Color(0xFF13152a), // oxford-blue-3
+  // ];
+  // List<Color> colors = const [
+  //   Color(0xFFB8F2E6),
+  //   Color(0xFFFFA69E),
+  //   Color(0xFFFAF3DD),
+  //   Color(0xFFAED9E0),
+  //   Color(0xFFdde5b6),
+  //   Color(0xFFf0ead2),
+  //   Color(0xFFf0ead2),
+  // ];
   @override
   Widget build(BuildContext context) {
     double sW = MediaQuery.of(context).size.width;
@@ -122,10 +134,11 @@ class _BookPageState extends State<BookPage> {
                               child: Center(
                                 child: txt(
                                   category,
+                                  weight: FontWeight.w600,
                                   color: isSelected
                                       ? Colors.white
                                       : AppColors.primaryButtonColor,
-                                  size: sW * 0.035,
+                                  size: sW * 0.037,
                                 ),
                               ),
                             ),
@@ -212,8 +225,8 @@ class _BookPageState extends State<BookPage> {
                                                   },
                                                   child: Container(
                                                     decoration: BoxDecoration(
-                                                      color: colors[bookIndex %
-                                                          colors.length],
+                                                      color: AppColors
+                                                          .secondaryColor,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               10),
@@ -228,20 +241,28 @@ class _BookPageState extends State<BookPage> {
                                                               .start,
                                                       children: [
                                                         Container(
+                                                          height: sH * 0.12,
+                                                          width: sW,
+
+                                                          // fit: BoxFit.cover,
+
                                                           decoration:
                                                               BoxDecoration(
+                                                            color: Colors.white,
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
-                                                                        10),
-                                                          ),
-                                                          child: Image.network(
-                                                            categoriedBooks[
-                                                                    bookIndex]
-                                                                .bookCoverUrl!,
-                                                            height: sH * 0.12,
-                                                            width: sW * 0.18,
-                                                            fit: BoxFit.cover,
+                                                                        8),
+                                                            image:
+                                                                DecorationImage(
+                                                                    image:
+                                                                        NetworkImage(
+                                                                      categoriedBooks[
+                                                                              bookIndex]
+                                                                          .bookCoverUrl!,
+                                                                    ),
+                                                                    fit: BoxFit
+                                                                        .cover),
                                                           ),
                                                         ),
                                                         SizedBox(
@@ -250,7 +271,7 @@ class _BookPageState extends State<BookPage> {
                                                           categoriedBooks[
                                                                   bookIndex]
                                                               .title!,
-                                                          size: sW * 0.04,
+                                                          size: sW * 0.045,
                                                           isBold: true,
                                                           maxLine: 1,
                                                         ),
@@ -263,7 +284,7 @@ class _BookPageState extends State<BookPage> {
                                                           categoriedBooks[
                                                                   bookIndex]
                                                               .description!,
-                                                          size: sW * 0.03,
+                                                          size: sW * 0.035,
                                                         ),
                                                       ],
                                                     ),
@@ -280,26 +301,27 @@ class _BookPageState extends State<BookPage> {
                                     },
                                   )
                                 : GridView.builder(
+                                    padding: EdgeInsets.all(10),
                                     shrinkWrap: true,
                                     physics:
                                         const NeverScrollableScrollPhysics(),
                                     gridDelegate:
                                         SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3, // Number of columns
+                                      crossAxisCount: 2, // Number of columns
                                       crossAxisSpacing:
-                                          sW * 0.02, // Spacing between columns
+                                          sW * 0.04, // Spacing between columns
                                       mainAxisSpacing:
                                           sH * 0.02, // Spacing between rows
                                       childAspectRatio: (sW * 0.31) /
                                           (sH *
-                                              0.22), // Aspect ratio of the child
+                                              0.20), // Aspect ratio of the child
                                     ),
                                     itemCount: filteredBooks.length,
                                     itemBuilder: (context, index) {
                                       BookModel book = filteredBooks[index];
                                       return Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.amber,
+                                          color: AppColors.secondaryColor,
                                           borderRadius: BorderRadius.circular(
                                             10,
                                           ),
@@ -313,31 +335,68 @@ class _BookPageState extends State<BookPage> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Container(
+                                              height: sH * 0.12,
+                                              width: sW,
+
+                                              // fit: BoxFit.cover,
+
                                               decoration: BoxDecoration(
+                                                color: Colors.white,
                                                 borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: Image.network(
-                                                book.bookCoverUrl!,
-                                                height: sH * 0.12,
-                                                width: sW * 0.18,
-                                                fit: BoxFit.cover,
+                                                    BorderRadius.circular(8),
+                                                image: DecorationImage(
+                                                    image: NetworkImage(
+                                                      book.bookCoverUrl!,
+                                                    ),
+                                                    fit: BoxFit.cover),
                                               ),
                                             ),
                                             SizedBox(height: sH * 0.01),
                                             txt(
                                               book.title,
-                                              size: sW * 0.04,
+                                              size: sW * 0.045,
                                               isBold: true,
                                               maxLine: 1,
                                             ),
                                             SizedBox(height: sH * 0.005),
                                             txt(
                                               book.description,
-                                              maxLine: 3,
+                                              maxLine: 2,
                                               color: const Color(0xff919191),
-                                              size: sW * 0.03,
+                                              size: sW * 0.035,
                                             ),
+                                            Spacer(),
+                                            Container(
+                                              width: double.infinity,
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          ViewPdf(
+                                                        title: book.title!,
+                                                        pdfUrl: book.bookUrl!,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: txt(
+                                                  'Read',
+                                                  color: Colors.white,
+                                                ),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: AppColors
+                                                      .primaryButtonColor,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                      10,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            )
                                           ],
                                         ),
                                       );

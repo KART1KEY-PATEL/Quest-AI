@@ -3,8 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:questias/pages/AuthGate/auth_gate.dart';
-import 'package:questias/pages/Base/Base.dart';
+import 'package:questias/pages/Base/base.dart';
 import 'package:questias/pages/Books/sub_pages/add_book.dart';
 import 'package:questias/pages/Books/sub_pages/view_book.dart';
 import 'package:questias/pages/Home/Home.dart';
@@ -28,9 +27,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  print("loading env");
+  // print("loading env");
   await dotenv.load(fileName: ".env");
-  print("done env");
+  // print("done env");
   // await FlutterSoundRecorder().openRecorder();
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,7 +57,7 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -81,6 +80,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        // textTheme: TextTheme(
+        //   titleMedium:
+        // ),
+
         scaffoldBackgroundColor: AppColors.primaryColor,
         colorScheme:
             ColorScheme.fromSeed(seedColor: Colors.deepPurple).copyWith(
@@ -97,7 +100,7 @@ class _MyAppState extends State<MyApp> {
           filled: true,
           fillColor: AppColors.primaryColor,
           hintStyle: const TextStyle(
-            color: Color(0xFF5A5A5A),
+            color: AppColors.primaryTextColor,
             fontSize: 14.0,
           ),
           border: OutlineInputBorder(
@@ -135,7 +138,7 @@ class _MyAppState extends State<MyApp> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            print("Error: ${snapshot.error}");
+            // print("Error: ${snapshot.error}");
             return const Center(
               child: Text("Something went wrong"),
             );
@@ -148,11 +151,11 @@ class _MyAppState extends State<MyApp> {
           }
 
           if (snapshot.hasData) {
-            print("User is logged in");
+            // print("User is logged in");
             return Base();
           }
 
-          print("User is not logged in");
+          // print("User is not logged in");
           return OnBoardingPage();
         },
       ),

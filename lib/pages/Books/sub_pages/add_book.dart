@@ -163,6 +163,7 @@ class _AddBooksPageState extends State<AddBooksPage> {
           },
           icon: const Icon(
             Icons.arrow_back_ios,
+            color: AppColors.backButtonColor,
           ),
         ),
         title: "Add Book",

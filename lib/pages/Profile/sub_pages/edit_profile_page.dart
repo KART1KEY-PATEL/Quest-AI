@@ -99,7 +99,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       appBar: customAppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(Icons.arrow_back_ios,            color: AppColors.backButtonColor,
+),
           onPressed: () {
             Navigator.of(context).pop();
           },

@@ -24,15 +24,14 @@ class ProfileSettingWidget extends StatelessWidget {
         height: sH * 0.07,
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.bottomNavColor,
+          color: AppColors.secondaryColor,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            txt(title,
-                size: sH * 0.015, weight: FontWeight.bold),
+            txt(title, size: sH * 0.015, weight: FontWeight.bold),
             Icon(
               Icons.arrow_forward_ios,
               color: AppColors.blackSVG,

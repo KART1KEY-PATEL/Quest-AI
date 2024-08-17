@@ -32,7 +32,8 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
       resizeToAvoidBottomInset: true,
       appBar: customAppBar(
         title: "",
-        leading: const Icon(Icons.arrow_back_ios),
+        leading: const Icon(Icons.arrow_back_ios,            color: AppColors.backButtonColor,
+),
       ),
       body: SingleChildScrollView(
         child: Padding(

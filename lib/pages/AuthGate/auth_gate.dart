@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:questias/pages/Base/Base.dart';
+import 'package:questias/pages/Base/base.dart';
 import 'package:questias/pages/OnBoarding/OnBoarding.dart';
 
 class AuthGate extends StatelessWidget {

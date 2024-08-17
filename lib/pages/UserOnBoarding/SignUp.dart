@@ -82,7 +82,10 @@ class _SignUpPageState extends State<SignUpPage> {
         title: "",
         leading: InkWell(
             onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.arrow_back_ios)),
+            child: const Icon(
+              Icons.arrow_back_ios,
+              color: AppColors.backButtonColor,
+            )),
       ),
       body: SingleChildScrollView(
         child: Padding(

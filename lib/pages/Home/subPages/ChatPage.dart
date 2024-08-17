@@ -124,7 +124,8 @@ class _ChatPageState extends State<ChatPage> {
             return InkWell(
               onTap: () => _onWillPop(),
               child: Icon(
-                Icons.arrow_back_ios,
+                Icons.arrow_back_ios,            color: AppColors.backButtonColor,
+
               ),
             );
           }),

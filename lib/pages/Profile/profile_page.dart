@@ -21,6 +21,13 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   @override
+  void initState() {
+    super.initState();
+    // Fetch the user details when the page is loaded
+    Provider.of<UserProvider>(context, listen: false).fetchUser(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
     double sH = MediaQuery.of(context).size.height;
     double sW = MediaQuery.of(context).size.width;
@@ -62,7 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: NetworkImage(
-                              controller.user!.imageUrl,
+                              controller.user?.imageUrl ?? '',
                             ),
                             fit: BoxFit.cover,
                           ),
@@ -74,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: sH * 0.01,
                       ),
                       txt(
-                        controller.user!.name,
+                        controller.user?.name ?? 'Loading...',
                         size: sH * 0.02,
                       ),
                       SizedBox(
@@ -97,7 +104,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         child: Center(
                           child: txt(
-                            controller.user!.plan.capitalize(),
+                            controller.user?.plan.capitalize() ?? 'Loading...',
                             color: Colors.white,
                             weight: FontWeight.bold,
                           ),
@@ -110,10 +117,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             txt(
-                              "Email: ${controller.user!.email}",
+                              "Email: ${controller.user?.email ?? 'Loading...'}",
                             ),
                             txt(
-                              "Phone: ${controller.user!.phone}",
+                              "Phone: ${controller.user?.phone ?? 'Loading...'}",
                             )
                           ],
                         ),

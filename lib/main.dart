@@ -31,6 +31,7 @@ void main() async {
   print("loading env");
   await dotenv.load(fileName: ".env");
   print("done env");
+  // await FlutterSoundRecorder().openRecorder();
 
   WidgetsFlutterBinding.ensureInitialized();
 

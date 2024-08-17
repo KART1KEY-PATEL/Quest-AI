@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:questias/pages/Home/controller/ChatController.dart';
 import 'package:questias/models/openAIChatModel.dart';
@@ -7,13 +8,15 @@ import 'package:questias/services/BackendService.dart';
 import 'package:questias/utils/color.dart';
 import 'package:questias/utils/customAppBar.dart';
 import 'package:questias/utils/textUtil.dart';
+import 'package:simple_ripple_animation/simple_ripple_animation.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class SpeechRecognitionPage extends StatefulWidget {
   final String chatId;
-  const SpeechRecognitionPage({Key? key, required this.chatId}) : super(key: key);
+  const SpeechRecognitionPage({Key? key, required this.chatId})
+      : super(key: key);
   @override
   _SpeechRecognitionPageState createState() => _SpeechRecognitionPageState();
 }
@@ -33,6 +36,12 @@ class _SpeechRecognitionPageState extends State<SpeechRecognitionPage> {
   void initState() {
     super.initState();
     _initSpeech();
+  }
+
+  @override
+  void dispose() {
+    _stopSpeaking(); // Stop any ongoing speech when the page is disposed
+    super.dispose();
   }
 
   /// This has to happen only once per app
@@ -66,6 +75,7 @@ class _SpeechRecognitionPageState extends State<SpeechRecognitionPage> {
   /// Each time to start a speech recognition session
   void _startListening() async {
     if (_speechEnabled) {
+      await _stopSpeaking(); // Stop any ongoing speech
       setState(() {
         _isListening = true;
       });
@@ -79,6 +89,15 @@ class _SpeechRecognitionPageState extends State<SpeechRecognitionPage> {
     setState(() {
       _isListening = false;
     });
+  }
+
+  /// Stop any ongoing text-to-speech
+  Future<void> _stopSpeaking() async {
+    try {
+      await platform.invokeMethod('stop');
+    } on PlatformException catch (e) {
+      print("Failed to stop speaking: '${e.message}'.");
+    }
   }
 
   /// This is the callback that the SpeechToText plugin calls when
@@ -123,19 +142,16 @@ class _SpeechRecognitionPageState extends State<SpeechRecognitionPage> {
     });
     if (message.isEmpty) return;
     final chatController = Provider.of<ChatController>(context, listen: false);
-    chatController.addMessage(widget.chatId, OpenAIChatModel(content: message, role: "user"));
+    chatController.addMessage(
+        widget.chatId, OpenAIChatModel(content: message, role: "user"));
     chatController.setLoading();
     String response = await _backendService.getOpenAIResponse(
       messages: chatController.messages,
     );
     chatController.setLoading();
-    chatController
-        .addMessage(widget.chatId, OpenAIChatModel(content: response, role: "assistant"));
+    chatController.addMessage(
+        widget.chatId, OpenAIChatModel(content: response, role: "assistant"));
 
-    // await Future.delayed(Duration(milliseconds: 3000), () {
-    //   print("Delay calledn");
-    //   // Do something
-    // });
     setState(() {
       _isLoading = false;
       isSpeaking = true;
@@ -157,7 +173,8 @@ class _SpeechRecognitionPageState extends State<SpeechRecognitionPage> {
               Icons.close,
               size: 30,
             ),
-            onPressed: () {
+            onPressed: () async {
+              await _stopSpeaking(); // Stop any ongoing speech
               Navigator.pop(context);
             },
           ),
@@ -165,77 +182,96 @@ class _SpeechRecognitionPageState extends State<SpeechRecognitionPage> {
         title: "",
         centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          children: [
-            AnimatedContainer(
-              margin: EdgeInsets.only(top: _isListening ? sH * 0.2 : sH * 0.3),
-              duration: Duration(milliseconds: 300),
-              width: _isListening ? 200.0 : 100.0,
-              height: _isListening ? 200.0 : 100.0,
-              decoration: BoxDecoration(
-                color: AppColors.primaryButtonColor,
-                borderRadius: BorderRadius.circular(100.0),
-              ),
-              child: _isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      body: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: sH * 0.2,
+            vertical: sH * 0.3,
+          ),
+          child: _isLoading
+              ? LoadingAnimationWidget.fourRotatingDots(
+                  color: AppColors.primaryButtonColor,
+                  size: 70,
+                )
+              : _isListening
+                  ? RippleAnimation(
+                      color: AppColors.primaryButtonColor,
+                      delay: const Duration(milliseconds: 300),
+                      repeat: true,
+                      minRadius: 75,
+                      ripplesCount: 6,
+                      duration: const Duration(milliseconds: 6 * 300),
+                      child: CircleAvatar(
+                        minRadius: sH * 0.06,
+                        maxRadius: sH * 0.06,
+                        backgroundColor: AppColors.primaryButtonColor,
+                        child: Icon(
+                          Icons.mic,
+                          size: sH * 0.03,
+                          color: AppColors.whiteTextColor,
+                        ),
                       ),
                     )
-                  : Center(
-                      child: !isSpeaking
-                          ? Icon(Icons.mic, size: 80, color: Colors.white)
-                          : Icon(Icons.headphones,
-                              size: 40, color: Colors.white),
-                    ),
+                  : RippleAnimation(
+                      color: AppColors.primaryButtonColor,
+                      delay: const Duration(milliseconds: 300),
+                      repeat: true,
+                      minRadius: 75,
+                      ripplesCount: 6,
+                      duration: const Duration(milliseconds: 6 * 300),
+                      child: CircleAvatar(
+                        minRadius: sH * 0.06,
+                        maxRadius: sH * 0.06,
+                        backgroundColor: AppColors.primaryButtonColor,
+                        child: Icon(
+                          Icons.headphones,
+                          size: sH * 0.04,
+                          color: AppColors.whiteTextColor,
+                        ),
+                      ),
+                    )),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: _isListening
+          ? Container(
+              height: sH * 0.07,
+              width: sW * 0.8,
+              decoration: BoxDecoration(
+                color: AppColors.primaryButtonColor,
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: InkWell(
+                onTap: _stopListening,
+                child: Center(
+                    child: txt(
+                  "Stop Listening",
+                  size: sW * 0.04,
+                  isBold: true,
+                  color: Colors.white,
+                )),
+              ),
+            )
+          : Container(
+              height: sH * 0.07,
+              width: sW * 0.8,
+              decoration: BoxDecoration(
+                color: AppColors.primaryButtonColor,
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    isSpeaking = false;
+                  });
+                  _startListening();
+                },
+                child: Center(
+                    child: txt(
+                  "Start Listening",
+                  size: sW * 0.04,
+                  isBold: true,
+                  color: Colors.white,
+                )),
+              ),
             ),
-            SizedBox(height: 250),
-            _isListening
-                ? Container(
-                    height: sH * 0.07,
-                    width: sW * 0.8,
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryButtonColor,
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    child: InkWell(
-                      onTap: _stopListening,
-                      child: Center(
-                          child: txt(
-                        "Stop Listening",
-                        size: sW * 0.04,
-                        isBold: true,
-                        color: Colors.white,
-                      )),
-                    ),
-                  )
-                : Container(
-                    height: sH * 0.07,
-                    width: sW * 0.8,
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryButtonColor,
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          isSpeaking = false;
-                        });
-                        _startListening();
-                      },
-                      child: Center(
-                          child: txt(
-                        "Start Listening",
-                        size: sW * 0.04,
-                        isBold: true,
-                        color: Colors.white,
-                      )),
-                    ),
-                  ),
-          ],
-        ),
-      ),
     );
   }
 }

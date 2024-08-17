@@ -79,28 +79,18 @@ class _HomePageState extends State<HomePage> {
     double sH = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: customAppBar(
-          title: "Quest AI",
-          centerTitle: true,
-          // elevation: 4,
-          leading: InkWell(
-            onTap: () {
-              Navigator.pushNamed(context, '/allChat');
-            },
-            child: Icon(
-              Icons.menu,
-            ),
+        title: "Quest AI",
+        centerTitle: true,
+        // elevation: 4,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pushNamed(context, '/allChat');
+          },
+          child: Icon(
+            Icons.menu,
           ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                BackendService().signOutUser();
-              },
-              icon: Icon(
-                Icons.logout,
-                color: AppColors.accentTextColor,
-              ),
-            ),
-          ]),
+        ),
+      ),
       body: Padding(
         padding: EdgeInsets.all(
           sH * 0.02,

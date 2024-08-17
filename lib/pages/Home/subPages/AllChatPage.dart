@@ -33,20 +33,20 @@ class _AllChatPageState extends State<AllChatPage> {
       appBar: customAppBar(title: "All Chats", centerTitle: true, actions: [
         InkWell(
           onTap: () => Navigator.pushNamed(context, '/home'),
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
       ]),
       body: Padding(
         padding:
             EdgeInsets.symmetric(horizontal: sW * 0.04, vertical: sH * 0.02),
         child: Consumer<ChatController>(builder: (context, controller, child) {
           if (controller.isLoading) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (controller.allChats.isEmpty) {
-            return Center(child: Text("No chats available"));
+            return const Center(child: Text("No chats available"));
           }
 
           return ListView.separated(
@@ -54,11 +54,8 @@ class _AllChatPageState extends State<AllChatPage> {
             itemCount: controller.allChats.length,
             itemBuilder: (context, index) {
               final chat = controller.allChats[index];
-              String formattedDate = DateFormat('yyyy-MM-dd').format(chat.time);
-
               return InkWell(
                 onTap: () {
-                  // Navigate to chat detail page with chatId
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -70,7 +67,7 @@ class _AllChatPageState extends State<AllChatPage> {
                     borderRadius: BorderRadius.circular(20),
                     color: AppColors.secondaryColor,
                   ),
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: Row(
                     children: [
                       Column(
@@ -78,7 +75,7 @@ class _AllChatPageState extends State<AllChatPage> {
                         children: [
                           Text(chat.title,
                               style: TextStyle(fontSize: sH * 0.02)),
-                          Container(
+                          SizedBox(
                             // color: Colors.amber,
                             width: sW * 0.8,
                             child: txt(chat.lastMessage,
@@ -86,8 +83,8 @@ class _AllChatPageState extends State<AllChatPage> {
                           ),
                         ],
                       ),
-                      Spacer(),
-                      Icon(Icons.arrow_forward_ios,
+                      const Spacer(),
+                      const Icon(Icons.arrow_forward_ios,
                           color: AppColors.primaryTextColor),
                     ],
                   ),

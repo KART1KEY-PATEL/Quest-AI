@@ -20,16 +20,23 @@ class MainActivity: FlutterActivity() {
         }
 
         MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
-            if (call.method == "speak") {
-                val text = call.argument<String>("text")
-                if (text != null) {
-                    tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
-                    result.success("Success")
-                } else {
-                    result.error("Error", "Text is null", null)
+            when (call.method) {
+                "speak" -> {
+                    val text = call.argument<String>("text")
+                    if (text != null) {
+                        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+                        result.success("Success")
+                    } else {
+                        result.error("Error", "Text is null", null)
+                    }
                 }
-            } else {
-                result.notImplemented()
+                "stop" -> {
+                    tts.stop()
+                    result.success("Stopped")
+                }
+                else -> {
+                    result.notImplemented()
+                }
             }
         }
     }

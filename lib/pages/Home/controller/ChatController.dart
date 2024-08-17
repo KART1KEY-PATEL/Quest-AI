@@ -20,34 +20,6 @@ class ChatController with ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> addSavedChat(ChatTile chatTile) async {
-  //   // Ensure a unique chat ID for the saved chat, if it's not provided
-  //   String savedChatId = chatTile.chatId.isEmpty
-  //       ? FirebaseFirestore.instance.collection('savedChats').doc().id
-  //       : chatTile.chatId;
-
-  //   // Reference to the new saved chat document
-  //   DocumentReference savedChatRef = _firestore
-  //       .collection('users')
-  //       .doc(userId)
-  //       .collection('savedChats') // Note: using 'savedChats' instead of 'chats'
-  //       .doc(savedChatId);
-
-  //   final snapshot = await savedChatRef.get();
-
-  //   if (!snapshot.exists) {
-  //     await savedChatRef.set({
-  //       'createdAt': Timestamp.now(), // Ensure this is outside the 'chat' map
-  //       'chat': chatTile.toMap(),
-  //       'messages': chatTile.messages.map((m) => m.toMap()).toList(),
-  //     }, SetOptions(merge: true));
-  //     savedChats.add(chatTile); // Add to the local list of saved chats
-  //     notifyListeners();
-  //   } else {
-  //     print("Chat already exists in saved chats");
-  //   }
-  // }
-
   Future<void> addChat(String chatId, ChatTile chatTile) async {
     DocumentReference chatRef = _firestore
         .collection('users')
@@ -59,6 +31,7 @@ class ChatController with ChangeNotifier {
     if (!snapshot.exists) {
       allChats.add(chatTile);
       await chatRef.set({
+        'title': chatTile.title,
         'createdAt': Timestamp.now(), // Ensure this is outside the 'chat' map
         'chat': chatTile.toMap(),
         'messages': [],
@@ -87,6 +60,7 @@ class ChatController with ChangeNotifier {
       messages = [];
       messages.add(message);
       await chatRef.set({
+        'title': message.content,
         'createdAt': Timestamp.now(),
         'messages': [message.toMap()],
         'lastMessage': message.content,
